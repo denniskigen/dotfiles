@@ -31,7 +31,9 @@ rofi.color-urgent:  #3a3c4e, #ea51b2, #3a3c4e, #3a3c4e, #ea51b2
 
 ! Set the desired separator style
 rofi.separator-style: solid
-rofi.theme: /usr/share/rofi/themes/base16-dracula.rasi
+
+rofi.font: Fira Sans 12
+rofi.theme: /usr/share/rofi/themes/Arc-Dark.rasi
 
 ! "Enabled modi" Set from: Default
 ! rofi.modi:                           window,run,ssh
@@ -41,8 +43,6 @@ rofi.width:                          35
 rofi.lines:                          10
 ! "Number of columns" Set from: Default
 ! rofi.columns:                        1
-! "Font to use" Set from: Default
-rofi.font:                          Fira Sans 10
 ! "Border width" Set from: Default
 ! rofi.bw:                             1
 ! "Location on screen" Set from: Default
@@ -246,4 +246,3 @@ rofi.terminal:                         termite
 ! "The display name of this browser" Set from: Default
 ! rofi.display-windowcd:               
 ! "The display name of this browser" Set from: Default
-! rofi.display-combi:  

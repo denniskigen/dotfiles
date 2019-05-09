@@ -11,9 +11,10 @@ secondary = #e60053
 alert = #bd2c40
 
 [bar/top]
-monitor = "eDP1"
+;monitor = "eDP-1"
+monitor = "eDP-1"
 width = 100%
-height = 22
+height = 30
 offset-x = 0
 offset-y = 0
 ;bottom = true
@@ -35,24 +36,25 @@ padding-right = 0
 module-margin-left = 0 
 module-margin-right = 0
 
-font-0 = Fira Mono:style=Bold:size=7.5;
+font-0 = Fira Sans:style=Medium:size=9;
 ;font-0 = Fantasque Sans Mono NF:style=Bold:size=8;-2
-font-1 = FontAwesome:style=Regular:size=7;1
+font-1 = Font Awesome:style=Regular:size=7;1
 
 modules-left = i3
 modules-center = xwindow
-modules-right = battery volume wlan date keyboard powermenu
+;modules-right = memory battery volume wlan date keyboard
+modules-right = memory battery volume wlan date
 
 tray-position = right
 tray-padding = 0
 ;tray-background = #5a000000
 tray-detached = false
 tray-offset-x = 0
-tray-offset-y = -1
+tray-offset-y = 0
 tray-scale = 1.0
 tray-maxsize = 20
 
-;wm-restack = i3
+wm-restack = i3
 
 scroll-up = i3wm-wsnext
 scroll-down = i3wm-wsprev
@@ -106,7 +108,7 @@ interval = 1.0
 
 ; See "man date" for details on how to format the date string
 ; NOTE: if you want to use syntax tags here you need to use %%{...}
-date = %a %b %d, 
+date = %a %b %d
 
 ; Optional time format
 time = %H:%M
@@ -119,7 +121,7 @@ time = %H:%M
 label = %date% %time%
 format =  <label>
 ;format-background = #ddffffff
-format-background = #88000000
+;format-background = #88000000
 ;format-foreground = #333
 format-padding = 3
 
@@ -131,14 +133,38 @@ format-padding = 3
 
 [module/wlan]
 type = internal/network
-interface = wlp3s0
-interval = 3.0
+interface = wlp58s0
+label-padding = 3
 
+; Seconds to sleep between updates
+; Default: 1
+interval = 1.0
+
+; Test connectivity every Nth update
+; A value of 0 disables the feature
+; NOTE: Experimental (needs more testing)
+; Default: 0
+;ping-interval = 3
+
+; @deprecated: Define min width using token specifiers (%downspeed:min% and %upspeed:min%)
+; Minimum output width of upload/download rate
+; Default: 3=
+
+; Accumulate values from all interfaces
+; when querying for up/downspeed rate
+; Default: false
+accumulate-stats = true
+
+; Consider an `UNKNOWN` interface state as up.
+; Some devices have an unknown state, even when they're running
+; Default: false
+unknown-as-up = true
 
 ; Available tags:
 ;   <label-connected> (default)
 ;   <ramp-signal>
-format-connected = <ramp-signal> <label-connected>
+;format-connected = <ramp-signal> <label-connected>
+format-connected = <label-connected>
 
 ; Available tags:
 ;   <label-disconnected> (default)
@@ -194,33 +220,14 @@ animation-packetloss-0-foreground = #ffa64c
 animation-packetloss-1 = 📶
 animation-packetloss-1-foreground = #000000
 ; Framerate in milliseconds
-animation-packetloss-framerate = 500:q
-
-
-
-;format-connected = <ramp-signal> <label-connected>
-;format-connected-underline = #9f78e1
-;label-connected = %essid%
-
-;format-disconnected = <label-disconnected>
-;format-disconnected-underline = ${self.format-connected-underline}
-;label-disconnected = %ifname% disconnected
-;label-disconnected-foreground = ${colors.foreground-alt}
-
-;ramp-signal-0 = 
-;ramp-signal-1 = 
-;ramp-signal-2 = 
-;ramp-signal-3 = 
-;ramp-signal-4 = 
-
-;ramp-signal-foreground = ${colors.foreground-alt}
+animation-packetloss-framerate = 500
 
 [module/battery]
 type = internal/battery
 
 full-at = 99
 
-battery = BAT1
+battery = BAT0
 adapter = AC0
 
 poll-interval = 5
@@ -231,9 +238,9 @@ format-full = <ramp-capacity> <label-full>
 label-charging = %percentage%
 label-discharging = %percentage%
 label-full = %percentage%
-format-charging-padding = 3
-format-discharging-padding = 3
-format-full-padding = 3
+format-charging-padding = 2
+format-discharging-padding = 2
+format-full-padding = 2
 
 ramp-capacity-0 = 
 ramp-capacity-1 = 
@@ -256,8 +263,8 @@ format-muted = <label-muted>
 label-volume = %percentage%
 label-muted =  muted
 label-muted-foreground = #aaa
-format-volume-padding = 3
-format-muted-padding = 3
+format-volume-padding = 2 
+format-muted-padding = 2
 
 ramp-volume-0 = 
 ramp-volume-1 = 
@@ -267,6 +274,7 @@ ramp-headphones-0 = 
 [module/powermenu]
 type = custom/menu
 
+;label-open = 
 label-open =   
 ;label-open-background = #dd0000
 ;label-open-foreground = #fff
@@ -318,8 +326,8 @@ format-spacing = 0
 ; Default: %layout%
 label-layout = %name%
 label-layout-padding = 2
-label-layout-background = #bc99ed
-label-layout-foreground = #000
+label-layout-background = #373b41
+label-layout-foreground = #fff
 
 ; Available tokens:
 ;   %name%
@@ -327,3 +335,43 @@ label-layout-foreground = #000
 label-indicator = %name%
 label-indicator-padding = 2
 label-indicator-background = #8139e8 
+
+[module/memory]
+type = internal/memory
+interval = 3
+
+;format = <label> <bar-used>
+format = <label>
+;label = u %gb_used% f %gb_free%
+label = u %gb_used%
+
+; Only applies if <bar-used> is used
+bar-used-indicator =
+bar-used-width = 50
+bar-used-foreground-0 = #55aa55
+bar-used-foreground-1 = #557755
+bar-used-foreground-2 = #f5a70a
+bar-used-foreground-3 = #ff5555
+bar-used-fill = ▐
+bar-used-empty = ▐
+bar-used-empty-foreground = #444444
+
+; Only applies if <ramp-used> is used
+;ramp-used-0 = ▁
+;ramp-used-1 = ▂
+;ramp-used-2 = ▃
+;ramp-used-3 = ▄
+;ramp-used-4 = ▅
+;ramp-used-5 = ▆
+;ramp-used-6 = ▇
+;ramp-used-7 = █
+
+; Only applies if <ramp-free> is used
+;ramp-free-0 = ▁
+;ramp-free-1 = ▂
+;ramp-free-2 = ▃
+;ramp-free-3 = ▄
+;ramp-free-4 = ▅
+;ramp-free-5 = ▆
+;ramp-free-6 = ▇
+;ramp-free-7 = █

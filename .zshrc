@@ -3,8 +3,17 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH=/home/kigen/.oh-my-zsh
+export QT_AUTO_SCREEN_SCALE_FACTOR=0
+export QT_QPA_PLATFORMTHEME=gtk2
+
+if [[ $TERM == xterm-termite ]]; then
+  . /etc/profile.d/vte.sh
+  __vte_osc7
+fi
 
 source /usr/share/nvm/init-nvm.sh
+
+eval "$(rbenv init -)"
 
 export LC_CTYPE=en_GB.UTF-8
 
@@ -121,3 +130,14 @@ alias :q="exit"
 alias :Q="exit"
 alias :x="exit"
 alias cd..="cd .."
+
+alias ydl="youtube-dl"
+alias ydlq="youtube-dl -f '(mp4) [height<1080]' url"
+alias ymp3="youtube-dl -x --embed-thumbnail --audio-format mp3" 
+alias bbl="babel-repl"
+alias ng2="cd ~/Code/Angular/work/ng2-amrs && npm start"
+alias ngdir="cd ~/Code/Angular/"
+alias etl="cd ~/Code/Angular/work/etl-rest-server"
+alias formentry="cd ~/Code/Angular/work/ngx-openmrs-formentry"
+# youtube-dl -f "(mp4) [height<1080]" url
+# source /usr/share/zsh-theme-powerlevel9k/powerlevel9k.zsh-theme
