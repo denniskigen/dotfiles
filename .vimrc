@@ -1,29 +1,18 @@
 set tabstop=2
+set guifont="Fira Code" \13.5
 set number
 set termguicolors
-
 call plug#begin('~/.vim/plugged')
 	Plug 'vim-airline/vim-airline'
 	Plug 'vim-airline/vim-airline-themes'
-	Plug 'svermeulen/vim-easyclip'
-	Plug 'leafgarland/typescript-vim'
-	Plug 'dracula/vim', {'as': 'dracula'}
-	Plug 'joshdick/onedark.vim'
-	Plug 'sheerun/vim-polyglot'
-	Plug 'tpope/vim-fugitive'
-	Plug 'scrooloose/nerdtree'
-	Plug 'junegunn/fzf'
-	Plug 'altercation/vim-colors-solarized'
-	Plug 'flazz/vim-colorschemes'
-	Plug 'haishanh/night-owl.vim'
 call plug#end()
 
 syntax on
 "color flattened_dark
 "color night-owl
 "syntax on
-set background=dark
-color gruvbox
+"set background=dark
+"color gruvbox
 
 set laststatus=2
 
