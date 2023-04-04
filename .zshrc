@@ -115,13 +115,17 @@ alias ytrb="yarn turbo run build"
 alias ytrt="yarn turbo run test"
 alias ytrl="yarn turbo run lint"
 alias yss="yarn start --sources="
+alias yrv="yarn run verify"
+alias yui="yarn upgrade-interactive"
 alias gpomr="git pull origin main --rebase"
 alias glo="git log --oneline"
 alias gcan="git commit --amend --no-verify"
 alias grc="git rebase --continue"
 alias grm="git reset --merge"
+alias respawn="gco main && gpomr && yarn"
 alias q="exit"
-
+alias npxdev="npx openmrs develop --sources"
+alias gpfwl="git push --force-with-lease"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -134,6 +138,10 @@ export PATH="$PNPM_HOME:$PATH"
 
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
+source /Users/denniskigen/.docker/init-zsh.sh || true # Added by Docker Desktop
+
+export PATH="$PATH:$HOME/.local/bin"
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
