@@ -104,6 +104,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias yv="yarn verify"
 alias yrb="yarn run build"
 alias yrs="yarn run start"
 alias yrd="yarn run dev"
@@ -111,9 +112,9 @@ alias yrsh="yarn run:shell"
 alias yrt="yarn run test"
 alias yrl="yarn run lint"
 alias yrtw="yarn run test --watch"
-alias ytrb="yarn turbo run build"
-alias ytrt="yarn turbo run test"
-alias ytrl="yarn turbo run lint"
+alias ytb="yarn turbo build"
+alias ytt="yarn turbo test"
+alias ytl="yarn turbo lint"
 alias yss="yarn start --sources="
 alias yrv="yarn run verify"
 alias yui="yarn upgrade-interactive"
@@ -126,6 +127,12 @@ alias respawn="gco main && gpomr && yarn"
 alias q="exit"
 alias npxdev="npx openmrs develop --sources"
 alias gpfwl="git push --force-with-lease"
+alias killport='function _killport(){ lsof -i :$1 | awk '\''NR!=1 {print $2}'\'' | xargs kill -9; };_killport'
+alias gsl="git stash list"
+alias gsa="git stash apply"
+alias yteh="yarn test-e2e --headed"
+alias prd="pnpm run dev"
+alias prb="pnpm run build"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -145,3 +152,14 @@ export PATH="$PATH:$HOME/.local/bin"
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+
+
+# Load Angular CLI autocompletion.
+source <(ng completion script)
+
+# bun completions
+[ -s "/Users/denniskigen/.bun/_bun" ] && source "/Users/denniskigen/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
