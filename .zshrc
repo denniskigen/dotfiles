@@ -9,6 +9,10 @@ export ZSH="$HOME/.oh-my-zsh"
 # Stop homebrew from running auto-update on every install
 export HOMEBREW_NO_AUTO_UPDATE=1
 
+# Increase memory limit for Node.js
+#export NODE_OPTIONS=--max-old-space-size=8192
+
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -105,18 +109,29 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias yv="yarn verify"
-alias yrb="yarn run build"
-alias yrs="yarn run start"
-alias yrd="yarn run dev"
+alias yvf="yarn verify --force"
+alias yrb="yarn build"
+alias ybf="yarn build --force"
+alias yrs="yarn start"
+alias yrd="yarn dev"
 alias yrsh="yarn run:shell"
 alias yrt="yarn run test"
 alias yrl="yarn run lint"
-alias yrtw="yarn run test --watch"
+alias yb="yarn build"
+alias yl="yarn lint"
+alias yt="yarn test"
+alias ys="yarn start"
+alias yts="yarn typescript"
 alias ytb="yarn turbo build"
+alias ytbl="yarn turbo build:lib"
 alias ytt="yarn turbo test"
+alias yttf="ytt --force"
+alias yttw="yarn turbo test:watch"
 alias ytl="yarn turbo lint"
+alias ytlf="yarn turbo lint --force"
+alias ytty="yarn turbo typescript"
 alias yss="yarn start --sources="
-alias yrv="yarn run verify"
+alias yrv="yarn verify"
 alias yui="yarn upgrade-interactive"
 alias gpomr="git pull origin main --rebase"
 alias glo="git log --oneline"
@@ -124,6 +139,8 @@ alias gcan="git commit --amend --no-verify"
 alias grc="git rebase --continue"
 alias grm="git reset --merge"
 alias respawn="gco main && gpomr && yarn"
+alias resp="respawn"
+alias cres="clear && respawn && clear"
 alias q="exit"
 alias npxdev="npx openmrs develop --sources"
 alias gpfwl="git push --force-with-lease"
@@ -131,16 +148,24 @@ alias killport='function _killport(){ lsof -i :$1 | awk '\''NR!=1 {print $2}'\''
 alias gsl="git stash list"
 alias gsa="git stash apply"
 alias yteh="yarn test-e2e --headed"
-alias prd="pnpm run dev"
-alias prb="pnpm run build"
+alias prd="pnpm dev"
+alias prb="pnpm build"
+alias gpc="gh pr checkout"
+alias gdhh="git diff HEAD HEAD~1"
+alias wip="git commit -m 'WIP' --no-verify"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export NODE_OPTIONS=openssl-legacy-provider
+
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # pnpm
 export PNPM_HOME="/Users/denniskigen/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 # pnpm end
 
 export LC_CTYPE=en_US.UTF-8
@@ -150,12 +175,8 @@ source /Users/denniskigen/.docker/init-zsh.sh || true # Added by Docker Desktop
 
 export PATH="$PATH:$HOME/.local/bin"
 
-# Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
-
-
 # Load Angular CLI autocompletion.
-source <(ng completion script)
+# source <(ng completion script)
 
 # bun completions
 [ -s "/Users/denniskigen/.bun/_bun" ] && source "/Users/denniskigen/.bun/_bun"
@@ -163,3 +184,19 @@ source <(ng completion script)
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+alias ll="exa -l -g --icons --git"
+alias llt="exa -1 --icons --tree --git-ignore"
+alias search="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
+export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"
+
+alias mvn='JAVA_HOME="$(/usr/libexec/java_home -v 1.8)" mvn'
+
+# export PATH="/Library/Java/JavaVirtualMachines/temurin-11.jdk/Contents/Home/bin/:$PATH"
+
+# fnm
+export PATH="/Users/denniskigen/Library/Application Support/fnm:$PATH"
+eval "`fnm env`"
+
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
