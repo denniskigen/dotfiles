@@ -1,113 +1,124 @@
-# Fig pre block. Keep at the top of this file.
-[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Path to your oh-my-zsh installation.
+# Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 # Stop homebrew from running auto-update on every install
 export HOMEBREW_NO_AUTO_UPDATE=1
 
-# Increase memory limit for Node.js
-#export NODE_OPTIONS=--max-old-space-size=8192
+# Set language environment
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
-
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+# Theme configuration
 ZSH_THEME="robbyrussell"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
+# Plugins configuration
 plugins=(git z zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
+# Node.js and development tools configuration
 
-# export MANPATH="/usr/local/man:$MANPATH"
+# pnpm configuration
+export PNPM_HOME="/Users/denniskigen/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+# Bun configuration
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+[ -s "/Users/denniskigen/.bun/_bun" ] && source "/Users/denniskigen/.bun/_bun"
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+# fnm configuration
+export PATH="/Users/denniskigen/Library/Application Support/fnm:$PATH"
+eval "$(fnm env --use-on-cd)"
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+# MySQL configuration
+export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# Tool configurations
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=cyan"
+
+# Load Angular CLI autocompletion
+if command -v ng >/dev/null 2>&1; then
+  eval "$(ng completion script 2>/dev/null)" 2>/dev/null || true
+fi
+
+# Modern CLI alternatives
+alias ll="exa -l -g --icons --git"
+alias llt="exa -1 --icons --tree --git-ignore"
+alias search="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
+
+
+# Rebuild O3 from scratch with nightly images
+o3-rebuild() {
+  cd ~/Code/OpenMRS/openmrs-distro-referenceapplication &&
+  docker compose down -v &&
+  TAG=nightly docker compose pull &&
+  TAG=nightly docker compose build backend frontend &&
+  TAG=nightly docker compose up -d
+}
+
+# Rebuild O3 from scratch with QA images
+o3-rebuild-qa() {
+  cd ~/Code/OpenMRS/openmrs-distro-referenceapplication &&
+  docker compose down -v &&
+  TAG=qa docker compose pull &&
+  TAG=qa docker compose build backend frontend &&
+  TAG=qa docker compose up -d
+}
+
+# Git aliases
+unalias gpomr 2>/dev/null
+gpomr() {
+  local branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+  if [[ -z "$branch" ]]; then
+    if git show-ref -q refs/remotes/origin/main; then
+      branch=main
+    elif git show-ref -q refs/remotes/origin/master; then
+      branch=master
+    else
+      echo "Could not determine default branch" >&2
+      return 1
+    fi
+  fi
+  git pull origin "$branch" --rebase
+}
+alias grim="git rebase -i main"
+alias glo="git log --oneline"
+alias gagc="ga . && gc"
+alias gcan="git commit --amend --no-verify"
+alias grc="git rebase --continue"
+alias grm="git reset --merge"
+alias fwl="git push --force-with-lease"
+alias gsl="git stash list"
+alias gsa="git stash apply"
+alias gpc="gh pr checkout"
+alias prev-branch="git checkout -"
+alias copydiff="git diff HEAD | pbcopy"
+alias copystageddiff="git diff --staged | pbcopy"
+alias wip="git commit -m 'WIP' --no-verify"
+alias delete-merged="git branch --merged | grep -Ev '(^\*|master|main|dev)' | xargs git branch -d"
+alias grohm="git reset --hard origin/main"
+alias gdiff='commits=$(git rev-list --count main...HEAD) && git diff HEAD~$commits HEAD | pbcopy'
+alias gd='gdiff'
+alias delete-prev-branch='git rev-parse --abbrev-ref @{-1} | grep -qE "^(main|master)$" && echo "Cannot delete main/master branch" || git branch -D @{-1}'
+alias commits-over-main="git rev-list --count main...HEAD"
+alias squash-to-main='count=$(git rev-list --count main...HEAD) && git reset --soft HEAD~$count && git commit'
+alias gbr="git branch --sort=-committerdate | grep -v \"main\" | head -n 5"
+alias gfiles="git diff-tree --no-commit-id --name-only -r HEAD"
+alias gundo="git reset --soft HEAD^"
+alias fetch-prune="git fetch --prune"
+alias grecent="git reflog | grep 'checkout:' | sed 's/.*checkout: moving from .* to //' | awk '!seen[\$0]++' | head -5"
+alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gcane="git commit --amend --no-edit"
+alias gss="git status -s"
+alias prdiff="git --no-pager diff main...HEAD | pbcopy"
+alias prdiff-no-lock="git --no-pager diff main...HEAD -- ':(exclude)yarn.lock' | pbcopy"
+
+# Yarn aliases
 alias yv="yarn verify"
 alias yvf="yarn verify --force"
 alias yrb="yarn build"
@@ -115,88 +126,91 @@ alias ybf="yarn build --force"
 alias yrs="yarn start"
 alias yrd="yarn dev"
 alias yrsh="yarn run:shell"
+alias yrsl="yarn start --backend=http://localhost"
 alias yrt="yarn run test"
 alias yrl="yarn run lint"
 alias yb="yarn build"
 alias yl="yarn lint"
 alias yt="yarn test"
+alias yteh="yarn test-e2e --headed --ui"
 alias ys="yarn start"
 alias yts="yarn typescript"
-alias ytb="yarn turbo build"
+alias ytb="reset && yarn turbo build"
 alias ytbl="yarn turbo build:lib"
-alias ytt="yarn turbo test"
-alias yttf="ytt --force"
-alias yttw="yarn turbo test:watch"
+alias ytt="reset && yarn turbo test"
+alias yttf="reset && yarn turbo test --force"
+alias yttw="reset && yarn turbo test:watch"
 alias ytl="yarn turbo lint"
 alias ytlf="yarn turbo lint --force"
 alias ytty="yarn turbo typescript"
 alias yss="yarn start --sources="
 alias yrv="yarn verify"
 alias yui="yarn upgrade-interactive"
-alias gpomr="git pull origin main --rebase"
-alias glo="git log --oneline"
-alias gcan="git commit --amend --no-verify"
-alias grc="git rebase --continue"
-alias grm="git reset --merge"
-alias respawn="gco main && gpomr && yarn"
+
+# PNPM aliases
+alias prd="pnpm dev"
+alias prb="pnpm build"
+
+# Utility aliases
+# Show top 20 processes by CPU usage in a clean table
+topcpu() {
+  printf "%-8s %6s  %s\n" "PID" "CPU%" "COMMAND"
+  printf "%s\n" "------------------------------------"
+  ps aux -r | tail -n +2 | head -20 | awk '{
+    pid=$2; cpu=$3;
+    cmd=$11; gsub(/.*\//, "", cmd);  # Get basename
+    # Clean up common app helper names
+    if (cmd ~ /^Comet/) cmd="Comet "$12
+    else if (cmd ~ /^Cursor/) cmd="Cursor "$12
+    else if (cmd ~ /^Code/) cmd="Code "$12
+    printf "%-8s %6s  %s\n", pid, cpu, cmd
+  }'
+}
+alias respawn="git stash && gco main && grohm && gpomr && yarn"
 alias resp="respawn"
 alias cres="clear && respawn && clear"
 alias q="exit"
+function killport() { lsof -i :$1 | awk 'NR!=1 {print $2}' | xargs kill -9; }
+alias kn="killall node"
+alias code="cursor"
+
+# OpenMRS-specific aliases
+alias bump="yarn up openmrs@next @openmrs/esm-framework@next && gco package.json packages/esm-form-entry-app/package.json && yarn"
+alias bump-rfe="yarn up @openmrs/esm-form-engine-lib@next && gco packages/esm-form-engine-app/package.json && yarn"
+alias bump-afe="yarn up @openmrs/ngx-formentry@next && gco packages/esm-form-entry-app/package.json && yarn"
+alias bump-common-lib="yarn up @openmrs/esm-patient-common-lib@next && gco package.json && yarn"
+alias resolve-yarn="git checkout HEAD yarn.lock && yarn"
 alias npxdev="npx openmrs develop --sources"
-alias gpfwl="git push --force-with-lease"
-alias killport='function _killport(){ lsof -i :$1 | awk '\''NR!=1 {print $2}'\'' | xargs kill -9; };_killport'
-alias gsl="git stash list"
-alias gsa="git stash apply"
-alias yteh="yarn test-e2e --headed"
-alias prd="pnpm dev"
-alias prb="pnpm build"
-alias gpc="gh pr checkout"
-alias gdhh="git diff HEAD HEAD~1"
-alias wip="git commit -m 'WIP' --no-verify"
+omrs-shell-local() {
+  (cd ~/Code/OpenMRS/openmrs-esm-core && OMRS_PROXY_TARGET="${1:-http://localhost}" yarn run run:shell)
+}
 
-export NODE_OPTIONS=openssl-legacy-provider
+# Additional tool configurations
+if [ -f "$HOME/fig-export/dotfiles/dotfile.zsh" ]; then
+  source "$HOME/fig-export/dotfiles/dotfile.zsh"
+fi
 
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# pnpm
-export PNPM_HOME="/Users/denniskigen/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
+# Windsurf configuration
+export PATH="/Users/denniskigen/.codeium/windsurf/bin:$PATH"
 
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+# Claude CLI alias
 
-source /Users/denniskigen/.docker/init-zsh.sh || true # Added by Docker Desktop
 
-export PATH="$PATH:$HOME/.local/bin"
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/denniskigen/.lmstudio/bin"
+# End of LM Studio CLI section
 
-# Load Angular CLI autocompletion.
-# source <(ng completion script)
 
-# bun completions
-[ -s "/Users/denniskigen/.bun/_bun" ] && source "/Users/denniskigen/.bun/_bun"
+# amp
+export PATH="$HOME/.local/bin:$PATH"
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-alias ll="exa -l -g --icons --git"
-alias llt="exa -1 --icons --tree --git-ignore"
-alias search="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
-export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"
+# Added by Antigravity
+export PATH="/Users/denniskigen/.antigravity/antigravity/bin:$PATH"
 
-alias mvn='JAVA_HOME="$(/usr/libexec/java_home -v 1.8)" mvn'
-
-# export PATH="/Library/Java/JavaVirtualMachines/temurin-11.jdk/Contents/Home/bin/:$PATH"
-
-# fnm
-export PATH="/Users/denniskigen/Library/Application Support/fnm:$PATH"
-eval "`fnm env`"
-
-# Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+# opencode
+export PATH=/Users/denniskigen/.opencode/bin:$PATH
