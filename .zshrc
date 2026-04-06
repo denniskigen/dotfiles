@@ -26,48 +26,73 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
-# Bun configuration
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-[ -s "/Users/denniskigen/.bun/_bun" ] && source "/Users/denniskigen/.bun/_bun"
-
 # fnm configuration
 export PATH="/Users/denniskigen/Library/Application Support/fnm:$PATH"
 eval "$(fnm env --use-on-cd)"
 
-# MySQL configuration
-export PATH="/opt/homebrew/opt/mysql@5.7/bin:$PATH"
-
 # Tool configurations
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=cyan"
 
-# Load Angular CLI autocompletion
-if command -v ng >/dev/null 2>&1; then
-  eval "$(ng completion script 2>/dev/null)" 2>/dev/null || true
-fi
-
 # Modern CLI alternatives
-alias ll="exa -l -g --icons --git"
-alias llt="exa -1 --icons --tree --git-ignore"
+alias ll="eza -l -g --icons --git"
+alias llt="eza -1 --icons --tree --git-ignore"
 alias search="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
 
 
 # Rebuild O3 from scratch with nightly images
 o3-rebuild() {
-  cd ~/Code/OpenMRS/openmrs-distro-referenceapplication &&
-  docker compose down -v &&
-  TAG=nightly docker compose pull &&
-  TAG=nightly docker compose build backend frontend &&
-  TAG=nightly docker compose up -d
+  cd ~/Code/openmrs-distro-referenceapplication &&
+  TAG=nightly docker compose up -d --pull always --force-recreate --wait
 }
 
 # Rebuild O3 from scratch with QA images
 o3-rebuild-qa() {
-  cd ~/Code/OpenMRS/openmrs-distro-referenceapplication &&
-  docker compose down -v &&
-  TAG=qa docker compose pull &&
-  TAG=qa docker compose build backend frontend &&
-  TAG=qa docker compose up -d
+  cd ~/Code/openmrs-distro-referenceapplication &&
+  TAG=qa docker compose up -d --pull always --force-recreate --wait
+}
+
+# Sync distro config, tear down volumes, prune images, then rebuild from nightly
+o3-sync-fresh() {
+  cd ~/Code/openmrs-distro-referenceapplication || return 1
+
+  if [[ -n "$(git status --porcelain)" ]]; then
+    echo "Refusing to sync: working tree is not clean in openmrs-distro-referenceapplication."
+    return 1
+  fi
+
+  local branch
+  branch=$(git branch --show-current)
+  if [[ "$branch" != "main" ]]; then
+    echo "Refusing to sync: current branch is '$branch'. Switch to main first."
+    return 1
+  fi
+
+  git fetch origin &&
+  git pull --ff-only &&
+  TAG=nightly docker compose down -v &&
+  docker image prune -af &&
+  TAG=nightly docker compose up -d --pull always --force-recreate --wait
+}
+
+# Sync distro config from origin/main, then refresh nightly images
+o3-sync-rebuild() {
+  cd ~/Code/openmrs-distro-referenceapplication || return 1
+
+  if [[ -n "$(git status --porcelain)" ]]; then
+    echo "Refusing to sync: working tree is not clean in openmrs-distro-referenceapplication."
+    return 1
+  fi
+
+  local branch
+  branch=$(git branch --show-current)
+  if [[ "$branch" != "main" ]]; then
+    echo "Refusing to sync: current branch is '$branch'. Switch to main first, or use o3-rebuild."
+    return 1
+  fi
+
+  git fetch origin &&
+  git pull --ff-only &&
+  TAG=nightly docker compose up -d --pull always --force-recreate --wait
 }
 
 # Git aliases
@@ -121,9 +146,7 @@ alias prdiff-no-lock="git --no-pager diff main...HEAD -- ':(exclude)yarn.lock' |
 # Yarn aliases
 alias yv="yarn verify"
 alias yvf="yarn verify --force"
-alias yrb="yarn build"
 alias ybf="yarn build --force"
-alias yrs="yarn start"
 alias yrd="yarn dev"
 alias yrsh="yarn run:shell"
 alias yrsl="yarn start --backend=http://localhost"
@@ -144,7 +167,6 @@ alias ytl="yarn turbo lint"
 alias ytlf="yarn turbo lint --force"
 alias ytty="yarn turbo typescript"
 alias yss="yarn start --sources="
-alias yrv="yarn verify"
 alias yui="yarn upgrade-interactive"
 
 # PNPM aliases
@@ -159,20 +181,26 @@ topcpu() {
   ps aux -r | tail -n +2 | head -20 | awk '{
     pid=$2; cpu=$3;
     cmd=$11; gsub(/.*\//, "", cmd);  # Get basename
-    # Clean up common app helper names
-    if (cmd ~ /^Comet/) cmd="Comet "$12
-    else if (cmd ~ /^Cursor/) cmd="Cursor "$12
-    else if (cmd ~ /^Code/) cmd="Code "$12
     printf "%-8s %6s  %s\n", pid, cpu, cmd
   }'
 }
-alias respawn="git stash && gco main && grohm && gpomr && yarn"
+unalias respawn 2>/dev/null
+respawn() {
+  local branch
+  branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+  if [[ -z "$branch" ]]; then
+    if git show-ref -q refs/remotes/origin/main; then branch=main
+    elif git show-ref -q refs/remotes/origin/master; then branch=master
+    else echo "Could not determine default branch" >&2; return 1
+    fi
+  fi
+  git stash && git checkout "$branch" && git fetch origin && git reset --hard "origin/$branch"; [[ -f yarn.lock ]] && yarn
+}
 alias resp="respawn"
 alias cres="clear && respawn && clear"
 alias q="exit"
 function killport() { lsof -i :$1 | awk 'NR!=1 {print $2}' | xargs kill -9; }
 alias kn="killall node"
-alias code="cursor"
 
 # OpenMRS-specific aliases
 alias bump="yarn up openmrs@next @openmrs/esm-framework@next && gco package.json packages/esm-form-entry-app/package.json && yarn"
@@ -182,35 +210,6 @@ alias bump-common-lib="yarn up @openmrs/esm-patient-common-lib@next && gco packa
 alias resolve-yarn="git checkout HEAD yarn.lock && yarn"
 alias npxdev="npx openmrs develop --sources"
 omrs-shell-local() {
-  (cd ~/Code/OpenMRS/openmrs-esm-core && OMRS_PROXY_TARGET="${1:-http://localhost}" yarn run run:shell)
+  (cd ~/Code/openmrs-esm-core && OMRS_PROXY_TARGET="${1:-http://localhost}" yarn run run:shell)
 }
 
-# Additional tool configurations
-if [ -f "$HOME/fig-export/dotfiles/dotfile.zsh" ]; then
-  source "$HOME/fig-export/dotfiles/dotfile.zsh"
-fi
-
-
-# Windsurf configuration
-export PATH="/Users/denniskigen/.codeium/windsurf/bin:$PATH"
-
-# Claude CLI alias
-
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/denniskigen/.lmstudio/bin"
-# End of LM Studio CLI section
-
-
-# amp
-export PATH="$HOME/.local/bin:$PATH"
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-# Added by Antigravity
-export PATH="/Users/denniskigen/.antigravity/antigravity/bin:$PATH"
-
-# opencode
-export PATH=/Users/denniskigen/.opencode/bin:$PATH
