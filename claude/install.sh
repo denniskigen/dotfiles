@@ -28,6 +28,10 @@ done
 
 link "$repo/agents" "$HOME/.agents"
 
+# Claude walks up from the working directory to find .mcp.json, so the one at
+# $HOME covers every project under it.
+link "$repo/claude/mcp.json" "$HOME/.mcp.json"
+
 # port-openmrs-form's content is shared with Codex. Point Codex at the same
 # copy so the two never drift.
 codex_skill="$HOME/.codex/skills/port-openmrs-form"
@@ -46,11 +50,10 @@ else
   echo "skip  $codex_skill not present, leaving Codex alone"
 fi
 
-if [ ! -e ~/.claude/.mcp.json ]; then
-  cp "$repo/claude/.mcp.json.example" ~/.claude/.mcp.json
+if [ ! -f "$HOME/Code/jira-mcp/.env" ]; then
   echo
-  echo "Created ~/.claude/.mcp.json from the example."
-  echo "Paste your Jira API token into it - it is deliberately not in git."
+  echo "The jira MCP server reads its own ~/Code/jira-mcp/.env for credentials."
+  echo "Clone that repo and create the .env before jira will connect."
 fi
 
 cat <<'EOF'

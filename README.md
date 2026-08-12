@@ -5,8 +5,9 @@ My dotfiles are how I personalize my system. Feel free to fork and change as you
 ## Claude Code config
 
 `claude/` holds the parts of `~/.claude` worth carrying between machines: global
-`CLAUDE.md`, `settings.json`, custom skills, and slash commands. `agents/` holds
-the shared skills that `~/.agents` serves to other tools.
+`CLAUDE.md`, `settings.json`, custom skills, slash commands, and the `mcp.json`
+that lands at `~/.mcp.json`. `agents/` holds the shared skills that `~/.agents`
+serves to other tools.
 
 On a new machine:
 
@@ -18,6 +19,11 @@ git clone https://github.com/denniskigen/dotfiles ~/Code/dotfiles
 That symlinks everything into place. Claude Code writes through the symlinks, so
 changing a setting in the app shows up as a diff here.
 
+One exception: `claude mcp add` refuses to write through a symlink and says so
+rather than failing quietly. Edit `claude/mcp.json` here instead. MCP servers
+get their own credentials, the jira one from `~/Code/jira-mcp/.env`, so no
+token belongs in `mcp.json`.
+
 The `port-openmrs-form` skill shares its `assets`, `references`, and `scripts`
 with the Codex copy of the same skill. The repo owns that content now, and
 `install.sh` points `~/.codex/skills/port-openmrs-form` at it when that
@@ -25,8 +31,7 @@ directory exists, so editing it through either tool changes one copy.
 
 What's deliberately not in the repo:
 
-- `.mcp.json` has a live Jira token, so it's gitignored. `install.sh` seeds it
-  from `.mcp.json.example` and you paste the token in.
+- Anything holding a credential. MCP servers read their own `.env` files.
 - `port-openmrs-form/assets/` is an AMRS concept dictionary snapshot. It's org
   metadata and this repo is public, so copy it between machines by hand.
 - `settings.local.json` is per-machine permission grants.

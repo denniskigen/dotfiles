@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "jira": {
+      "command": "uv",
+      "args": ["run", "--directory", "/Users/denniskigen/Code/jira-mcp", "python", "main.py"]
+    }
+  }
+}
