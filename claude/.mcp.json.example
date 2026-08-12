@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "jira": {
+      "command": "uv",
+      "args": ["run", "--directory", "/Users/denniskigen/Code/jira-mcp", "python", "main.py"],
+      "env": {
+        "JIRA_EMAIL": "dennis@id.openmrs.org",
+        "JIRA_API_TOKEN": "PASTE_TOKEN_HERE"
+      }
+    }
+  }
+}

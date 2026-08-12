@@ -1,0 +1,10 @@
+.DS_Store
+
+# Holds a live Jira API token. Keep it per-machine.
+claude/.mcp.json
+
+# Machine-local permission grants.
+claude/settings.local.json
+
+# AMRS concept dictionary snapshot. Org metadata, and this repo is public.
+claude/skills/port-openmrs-form/assets/
