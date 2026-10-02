@@ -7,7 +7,7 @@ description: "Use when opening a pull request on an OpenMRS or O3 repo: branchin
 
 Use this to ship a change as a PR on an `openmrs-esm-*`, `openmrs-module-*`, or other OpenMRS repo: create the branch, write the commit(s), draft the PR body from the repo's template, push, and open the PR with `gh`. This is the outbound counterpart to `o3-pr-review`.
 
-Invoking this skill authorizes the commit step for the described change. Pushing and opening the PR are gated separately and must be confirmed (see Approval Gates).
+If the user invoked this skill themselves (`/o3-pr-create`) or asked for the commit, that authorizes the commit step for the described change. If you loaded it on your own, confirm before committing. Pushing and opening the PR are gated separately and must be confirmed (see Approval Gates).
 
 ## Workflow
 
@@ -24,7 +24,7 @@ Invoking this skill authorizes the commit step for the described change. Pushing
 
 3. Write the commit(s).
    - The first commit on the branch must use a conventional commit label, because after squash-merge it becomes the PR title. Subsequent commits on the same branch do not need a label.
-   - Valid labels for OpenMRS repos: `feat`, `fix`, `chore`, `docs`, `test`, `style`, `perf`, `build`, `ci`. Do not use `refactor`.
+   - Valid labels: `feat`, `fix`, `chore`, `docs`, `test`, and `BREAKING` for breaking changes. The shared frontend PR title check rejects anything else. Do not use `refactor`.
    - Always include a clear, accurate commit body alongside the subject, explaining what changed and why.
    - No `Co-Authored-By` lines. No "Generated with Claude Code" tagline.
    - No em dashes in commit text. Restructure with periods or commas.
@@ -35,7 +35,7 @@ Invoking this skill authorizes the commit step for the described change. Pushing
    - Write the prose as a human would: describe the problem and the change directly. Skip generic Summary/Motivation/Test-plan scaffolding unless the template's own headers call for it.
    - Write the PR body and commit bodies in my register (see the Voice section in the global CLAUDE.md): plain prose, mechanism-first, no report scaffolding.
    - Check the requirement boxes that genuinely apply (conventional-commit title with ticket number, designs linked, tests included or validated by existing tests). Leave a box unchecked if it does not apply, rather than checking it to look complete.
-   - Title: conventional-commit format including the ticket number when one exists. This becomes the squash PR title. Check existing human-authored PR titles for convention.
+   - Title: `(type) O3-1234: Sentence case summary`, or `(type) Sentence case summary` when there's no ticket. Use `(BREAKING)` in place of the type for breaking changes. This becomes the squash PR title. `openmrs-module-*` repos usually drop the label (`O3-1234: Summary`, `RESTWS-1053: Summary`), so check existing human-authored PR titles for convention.
    - Add the Jira link to the Related Issue section when a ticket exists.
    - For UI changes, flag that a screenshot or recording is needed in the Screenshots section. You cannot capture it; ask the user to add it.
    - No em dashes anywhere in the body.
@@ -59,7 +59,7 @@ Invoking this skill authorizes the commit step for the described change. Pushing
 
 Hard stops, in order:
 
-- Commit: authorized by invoking this skill for the described change. Still show the commit plan (subjects and which files go in which commit) before committing if the change spans multiple concerns.
+- Commit: authorized when the user invoked this skill or asked for the commit; otherwise confirm first. Still show the commit plan (subjects and which files go in which commit) before committing if the change spans multiple concerns.
 - Push: never run `git push` without explicit confirmation in this session.
 - Open PR: never run `gh pr create` until the title and body are approved verbatim.
 
@@ -93,7 +93,7 @@ The test for done: a reviewer gets the whole change from the first sentence, and
 
 ## OpenMRS Defaults
 
-- Repos live under `~/Code/`.
+- Repos live under `~/Code/OpenMRS/`.
 - Use the `gh` CLI for GitHub operations.
 - Translations: hand-edit only `en.json`; other locales sync via Transifex.
 - Default local backend base URL is `http://localhost`.
