@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 Generate a standup update for the last 2 weeks. Follow these steps:
 
-1. Find all `openmrs-esm-*` and `openmrs-module-*` repos under `~/Code/`. Exclude PR-worktree clones (any directory whose name contains a `-pr<number>` segment, e.g. `*-pr3320-review`, `*-pr2973-claudereview`). Those are pinned PR checkouts and would double-count your commits.
+1. Find all `openmrs-esm-*` and `openmrs-module-*` repos directly under `~/Code/OpenMRS/` (`ls -d ~/Code/OpenMRS/openmrs-esm-*/ ~/Code/OpenMRS/openmrs-module-*/`). Don't descend into `~/Code/OpenMRS/worktrees/`. Those are PR checkouts and would double-count your commits.
 
-2. For each repo, collect commits authored by the current git user (`git config user.name`) from the last 2 weeks.
+2. For each repo, collect your commits from the last 2 weeks. Read the default branch (`git -C <repo> symbolic-ref --short refs/remotes/origin/HEAD`, else `origin/main` or `origin/master`) after a `git -C <repo> fetch --quiet`, and filter by email (`git config user.email`). Most clones sit on a feature branch where squash-merged work doesn't show, and your commits use more than one author name. For example: `git -C <repo> log origin/main --author="$(git config user.email)" --since='2 weeks ago'`.
 
 3. Check for in-flight work that commits alone won't surface. In each repo with recent activity, run `git status --short` for uncommitted changes, `git stash list` for parked work, and `git for-each-ref --sort=-committerdate refs/heads --format='%(committerdate:short) %(refname:short) %(upstream:track)'` for local branches touched during the period (including branches that are ahead of their upstream or have no upstream). Summarize what you find and ask whether any of it belongs in the update before writing the final version — don't silently drop it or guess what it is.
 
