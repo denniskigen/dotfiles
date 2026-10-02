@@ -16,9 +16,10 @@ This composes into `o3-pr-review` (its "inspect the actual code" and "validate b
    - A vague claim ("the backend handles this") cannot be validated. Sharpen it first.
 
 2. Find the authoritative source.
-   - Map the REST path to its handler. The frontend calls `/ws/rest/v1/<resource>`. Grep for the `@Resource(` annotation carrying that path segment across cloned modules to find the `*Resource.java` (usually under `omod/src/main/java/.../web/resources/`).
+   - Map the REST path to its handler. The frontend calls `/ws/rest/v1/<resource>`. Grep across cloned modules for all four handler styles: `@Resource(` and `@SubResource(` (the path segment is in `name`, sometimes built from constants), `@RequestMapping(` controllers (for example appointments), and FHIR `IResourceProvider` classes. The package varies per module (`web/resources`, `rest/resource`, `web/resource`, `web/rest/resource`), so do not filter by directory.
+   - In `openmrs-module-webservices.rest`, one path often has several versioned classes (`PatientResource1_8`, `PatientResource1_9`). Read the one whose `supportedOpenmrsVersions` covers the running core version (`GET http://localhost/openmrs/ws/rest/v1/systeminformation`), plus any subclass that overrides it.
    - Standard and core resources live in `openmrs-module-webservices.rest`. FHIR endpoints live in `openmrs-module-fhir2`. Domain resources live in their owning module (for example queue endpoints in `openmrs-module-queue`).
-   - Check local sibling `openmrs-module-*` repos under `~/Code/OpenMRS/` first. Pull the checkout before reading, so you are not validating against stale source. If the tree is dirty or diverged, skip the pull and say the read may be stale.
+   - Check local sibling `openmrs-module-*` repos under `~/Code/OpenMRS/` first. Run `git fetch origin` and read the default branch, not the working tree, so you are not validating against stale source or a PR branch someone left checked out: `git grep <pattern> origin/<default>` and `git show origin/<default>:<path>` (`git symbolic-ref --short refs/remotes/origin/HEAD` gives the default). This works on branches with no upstream and leaves the checkout untouched. If the fetch fails, say the read may be stale.
    - If the owning module is not cloned, find it on GitHub and clone it before reading.
    - Read the right checkout. There are PR worktrees under `~/Code/OpenMRS/worktrees/` (e.g. `openmrs-esm-core-pr-1881`); make sure you are in the intended one.
 
@@ -41,7 +42,7 @@ This composes into `o3-pr-review` (its "inspect the actual code" and "validate b
 When sources could disagree, trust them in this order:
 
 1. Live API response from the running backend for the exact representation in question.
-2. The runtime handler in the owning module (pulled fresh), read in full.
+2. The runtime handler in the owning module (fetched `origin/<default>`), read in full.
 3. The frontend TS type. Use it only to know what the frontend expects, never as proof of what the backend returns.
 
 ## REST Contract Checklist
@@ -61,20 +62,20 @@ O3 has two form engines that consume similar JSON with divergent shapes: Angular
 
 - When validating a form-schema or form-behavior claim for O3, filter Angular/AMPATH patterns against the React engine before trusting them.
 - Grep the runtime handler in the engine, not just its TS interfaces. The interfaces can be narrower than what the runtime accepts.
-- Validate schema claims against real corpora (LIME-EMR, reference-app-demo), not only the type definitions.
+- Validate schema claims against real corpora, not only the type definitions: `~/Code/OpenMRS/openmrs-content-referenceapplication-demo/configuration/backend_configuration/ampathforms/` locally, and `MSF-OCG/LIME-EMR` (`distro/configs/openmrs/initializer_config/ampathforms/`, not cloned locally; read it with `gh api` or clone it into `~/Code/OpenMRS/`).
 
 ## OpenMRS Defaults
 
-- Modules are `openmrs-module-<name>` under `~/Code/OpenMRS/`. REST resources usually live in `omod/src/main/java/.../web/resources/`.
+- Modules are `openmrs-module-<name>` under `~/Code/OpenMRS/`. REST handlers usually live under `omod/src/main/java/` (FHIR providers under `api/`), in a package that varies per module, so grep the whole repo.
 - Live local REST base is `http://localhost/openmrs/ws/rest/v1`. Requests without auth get a 401.
-- Pull the module before reading; skip only if dirty or diverged, and say so.
+- Fetch the module and read `origin/<default>`; if the fetch fails, say so.
 - TS interfaces can be narrower than runtime. Read the Java handler.
 - Standard/core resources: `openmrs-module-webservices.rest`. FHIR: `openmrs-module-fhir2`.
 
 ## Output Shape
 
 1. The precise claim being checked.
-2. The authoritative source used: module `file:line`, and/or the live endpoint plus representation. Note that the checkout was pulled, or why it was not.
+2. The authoritative source used: module `file:line`, and/or the live endpoint plus representation. Note the ref you read (fetched `origin/<default>`), or why it may be stale.
 3. Verdict: confirmed, refuted, partly correct, or not enough evidence.
 4. Verified facts and inferences, kept separate.
 5. If this feeds a review: the evidence string ready to drop into a finding, or the reason to retire the finding.
