@@ -30,11 +30,11 @@ If the user invoked this skill themselves (`/o3-pr-create`) or asked for the com
    - No em dashes in commit text. Restructure with periods or commas.
 
 4. Draft the PR title and body for approval.
-   - Read `.github/pull_request_template.md` in the repo and use it as the body structure. Templates differ per repo, so read the actual file each time.
-   - Keep every template section header (validators may require them). Leave a section blank under its header when there is nothing real to say. Do not write filler like "N/A", "no UI changes", or "dependency pin only".
+   - Read `.github/pull_request_template.md` in the repo and use it as the body structure. Templates differ per repo, so read the actual file each time. Backend repos differ: `openmrs-core`, `openmrs-module-webservices.rest` and `openmrs-module-fhir2` use an uppercase `.github/PULL_REQUEST_TEMPLATE.md` with their own sections, and many modules (queue, emrapi, billing) have none. With no template, copy the shape of recent merged human-authored PRs in that repo.
+   - Keep every template section header (validators may require them). Leave a section blank under its header when there is nothing real to say, except Summary: where the frontend PR description check runs, it fails on an empty Summary. Do not write filler like "N/A", "no UI changes", or "dependency pin only".
    - Write the prose as a human would: describe the problem and the change directly. Skip generic Summary/Motivation/Test-plan scaffolding unless the template's own headers call for it.
    - Write the PR body and commit bodies in my register (see the Voice section in the global CLAUDE.md): plain prose, mechanism-first, no report scaffolding.
-   - Check the requirement boxes that genuinely apply (conventional-commit title with ticket number, designs linked, tests included or validated by existing tests). Leave a box unchecked if it does not apply, rather than checking it to look complete.
+   - Check the requirement boxes that genuinely apply (conventional-commit title with ticket number, designs linked, tests included or validated by existing tests, and in esm-core, updated framework and storybook mocks for API changes). Leave a box unchecked if it does not apply, rather than checking it to look complete. Where the PR description check runs, the first box (title) must be checked or the check fails.
    - Title: `(type) O3-1234: Sentence case summary`, or `(type) Sentence case summary` when there's no ticket. Use `(BREAKING)` in place of the type for breaking changes. This becomes the squash PR title. `openmrs-module-*` repos usually drop the label (`O3-1234: Summary`, `RESTWS-1053: Summary`), so check existing human-authored PR titles for convention.
    - Add the Jira link to the Related Issue section when a ticket exists.
    - For UI changes, flag that a screenshot or recording is needed in the Screenshots section. You cannot capture it; ask the user to add it.
@@ -73,8 +73,8 @@ Hard stops, in order:
 
 ## PR Body Rules
 
-- Structure from the repo's `.github/pull_request_template.md`, read fresh each time.
-- Keep all section headers. Leave non-applicable sections blank under the header, no filler text.
+- Structure from the repo's PR template (`.github/pull_request_template.md`, or uppercase `PULL_REQUEST_TEMPLATE.md` in backend repos), read fresh each time. No template: follow recent merged PRs.
+- Keep all section headers. Leave non-applicable sections blank under the header, no filler text. Summary is never blank.
 - Humanize the prose. No default report scaffolding unless the template requires it.
 - Check only the requirement boxes that truly apply.
 - No "Generated with Claude Code" tagline. No em dashes.
