@@ -18,9 +18,9 @@ This composes into `o3-pr-review` (its "inspect the actual code" and "validate b
 2. Find the authoritative source.
    - Map the REST path to its handler. The frontend calls `/ws/rest/v1/<resource>`. Grep for the `@Resource(` annotation carrying that path segment across cloned modules to find the `*Resource.java` (usually under `omod/src/main/java/.../web/resources/`).
    - Standard and core resources live in `openmrs-module-webservices.rest`. FHIR endpoints live in `openmrs-module-fhir2`. Domain resources live in their owning module (for example queue endpoints in `openmrs-module-queue`).
-   - Check local sibling `openmrs-module-*` repos under `~/Code/` first. Pull the checkout before reading, so you are not validating against stale source. If the tree is dirty or diverged, skip the pull and say the read may be stale.
+   - Check local sibling `openmrs-module-*` repos under `~/Code/OpenMRS/` first. Pull the checkout before reading, so you are not validating against stale source. If the tree is dirty or diverged, skip the pull and say the read may be stale.
    - If the owning module is not cloned, find it on GitHub and clone it before reading.
-   - Read the right checkout. There are `*-pr<NNNN>-review` worktrees around; make sure you are in the intended one.
+   - Read the right checkout. There are PR worktrees under `~/Code/OpenMRS/worktrees/` (e.g. `openmrs-esm-core-pr-1881`); make sure you are in the intended one.
 
 3. Read the runtime, not just the types.
    - For a REST contract, read the handler in full: `getRepresentationDescription(Representation)` for which fields ship per `DEFAULT`/`FULL`/`REF`, `getCreatableProperties()` and `getUpdatableProperties()` for what POST accepts, `@PropertyGetter`/`@PropertySetter` for custom field handling, `doSearch`/`doGetAll` for filters and paging, and the `validate` path or the service call it delegates to.
@@ -28,7 +28,7 @@ This composes into `o3-pr-review` (its "inspect the actual code" and "validate b
    - Read the whole handler, not the first matching line. A representation can be overridden, a property added via `@PropertyGetter`, or a default changed further down. Do not anchor on the first signal.
 
 4. Confirm empirically when it matters.
-   - For contract questions where reading code leaves any doubt, query the live local backend at `http://localhost` using the representation the frontend actually requests (`?v=default`, `?v=full`, or the custom `v=custom:(...)`), and read the real response.
+   - For contract questions where reading code leaves any doubt, query the live local backend at `http://localhost/openmrs/ws/rest/v1/<resource>` (FHIR is under `/openmrs/ws/fhir2/R4`) with the local admin credentials (`curl -u admin:Admin123`), using the representation the frontend actually requests (`?v=default`, `?v=full`, or the custom `v=custom:(...)`), and read the real response.
    - Match the request the frontend makes (same params, same representation) so you are comparing like for like.
    - An actual response is ground truth over inferred behavior. A pending or unrun check is unknown, not support for a guess.
 
@@ -65,8 +65,8 @@ O3 has two form engines that consume similar JSON with divergent shapes: Angular
 
 ## OpenMRS Defaults
 
-- Modules are `openmrs-module-<name>` under `~/Code/`. REST resources usually live in `omod/src/main/java/.../web/resources/`.
-- Live local backend base URL is `http://localhost`.
+- Modules are `openmrs-module-<name>` under `~/Code/OpenMRS/`. REST resources usually live in `omod/src/main/java/.../web/resources/`.
+- Live local REST base is `http://localhost/openmrs/ws/rest/v1`. Requests without auth get a 401.
 - Pull the module before reading; skip only if dirty or diverged, and say so.
 - TS interfaces can be narrower than runtime. Read the Java handler.
 - Standard/core resources: `openmrs-module-webservices.rest`. FHIR: `openmrs-module-fhir2`.
