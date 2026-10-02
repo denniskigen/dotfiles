@@ -81,7 +81,7 @@ for (const id of duplicateIds) errors.push(`Duplicate field id: ${id}`);
 
 const expressionKeys = new Set([
   "hideWhenExpression", "disableWhenExpression", "failsWhenExpression", "calculateExpression",
-  "historicalExpression",
+  "historicalExpression", "alertWhenExpression",
 ]);
 // Helpers and scope variables the Angular form engine injects into expressions
 // (openmrs-ngx-formentry: JsExpressionHelper.helperFunctions + ExpressionRunner scope,
@@ -130,12 +130,15 @@ for (const uuid of conceptUuids) {
 }
 
 for (const { field, location } of fields) {
-  // The Angular engine's AlertHelper calls alertWhenExpression.indexOf on every alert
-  // entry; an alert without it (e.g. {useConceptReferenceRange: true}) throws during
-  // change detection and the whole form renders blank.
+  // The Angular engine reads question.alert as a single object and hands
+  // alert.alertWhenExpression to ExpressionRunner, which calls .indexOf on it outside its
+  // try block. An array, or an alert without the expression (e.g.
+  // {useConceptReferenceRange: true}), throws during change detection and the whole form
+  // renders blank.
   if (field.alert) {
-    const entries = Array.isArray(field.alert) ? field.alert : [field.alert];
-    if (!entries.every((entry) => typeof entry?.alertWhenExpression === "string")) {
+    if (Array.isArray(field.alert)) {
+      errors.push(`${location}.alert is an array; the Angular engine expects one alert object and the form renders blank.`);
+    } else if (typeof field.alert.alertWhenExpression !== "string") {
       errors.push(`${location}.alert has no alertWhenExpression; this crashes the Angular engine and the form renders blank.`);
     }
   }
@@ -198,6 +201,8 @@ if (metadataPath) {
 if (mode === "release-candidate") {
   if (!metadata) {
     errors.push("Release-candidate mode requires --metadata-report from live read-only target checks.");
+  } else if (metadata.source === "dictionary-snapshot" || String(metadata.targetBaseUrl ?? "").startsWith("snapshot:")) {
+    errors.push("The metadata report comes from a dictionary snapshot. Release-candidate mode needs live checks against the target (fetch-target-metadata.mjs).");
   } else {
     if (metadata.encounterType?.uuid !== form.encounterType || metadata.encounterType?.exists !== true || metadata.encounterType?.retired === true) {
       errors.push("The encounter type is not verified as existing and active in the metadata report.");

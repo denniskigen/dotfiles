@@ -23,7 +23,7 @@ const reportPath = option("--report");
 const uuidPattern = /^[A-Za-z0-9-]{36,38}$/;
 const expressionKeys = new Set([
   "hideWhenExpression", "disableWhenExpression", "failsWhenExpression", "calculateExpression",
-  "historicalExpression",
+  "historicalExpression", "alertWhenExpression",
 ]);
 
 let form;

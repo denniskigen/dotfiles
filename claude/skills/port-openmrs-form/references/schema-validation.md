@@ -61,7 +61,7 @@ Create it only from read-only target checks. Include no credentials or patient d
 
 ### ngx-formentry demo app (Angular engine)
 
-1. Use a local clone of `openmrs-ngx-formentry` (for example `~/Code/openmrs-ngx-formentry`). Clone it from `https://github.com/openmrs/openmrs-ngx-formentry` if missing. Confirm the working tree is clean before editing.
+1. Use a local clone of `openmrs-ngx-formentry` (for example `~/Code/OpenMRS/openmrs-ngx-formentry`). Clone it from `https://github.com/openmrs/openmrs-ngx-formentry` if missing. Confirm the working tree is clean before editing.
 2. Copy the candidate JSON into the demo app (for example `src/app/candidate-form.json`) and temporarily point the form `require()` in `src/app/app.component.ts` at it.
 3. Run `npm install` (first time only), then `npx ng serve`, and open `http://localhost:4200`.
 4. Work through the checklist below. Keep the browser console open: a blank or partial form usually means the Angular engine rejected a schema feature, and the console error names it.
