@@ -15,7 +15,9 @@ Update the brag document at `~/.claude/brag-doc.md` with recent work. Follow the
 
 4. For each repo, collect your commits for the target month. Read the default branch (`git -C <repo> symbolic-ref --short refs/remotes/origin/HEAD`, else `origin/main` or `origin/master`) after a `git -C <repo> fetch --quiet`, and filter by email (`git config user.email`). Most clones sit on a feature branch where squash-merged work doesn't show, and your commits use more than one author name. For example: `git -C <repo> log origin/main --author="$(git config user.email)" --since='<YYYY-MM-01> 00:00' --until='<first day of next month> 00:00'`.
 
-5. Check for PRs authored by `@me` that were merged or opened during the target month using `gh search prs --author="@me"`.
+5. Check for PRs authored by `@me` that were merged or opened during the target month. A month can exceed 100 PRs, so keep the high limit:
+   - Merged: `gh search prs --author="@me" --merged-at="<YYYY-MM-01>..<last day of month>" --limit 1000 --json number,title,repository,url,closedAt`
+   - Opened: `gh search prs --author="@me" --created="<YYYY-MM-01>..<last day of month>" --limit 1000 --json number,title,repository,url,state,createdAt`
 
 6. Categorize the work into sections matching the existing brag doc structure:
    - **Releases**: Version numbers and repo names

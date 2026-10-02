@@ -19,41 +19,43 @@ Each month in that sheet has six rows: one "Prioritization" row with a narrative
    - `since` = last calendar day of the month before target (e.g., for March 2026 → `2026-02-28`)
    - `until` = last calendar day of target month (e.g., `2026-03-31`)
 
-3. **Ensure `~/.claude/brag-doc.md` has an entry for the target month.** Read it. If no heading exists for the target month, inline the `/brag` workflow by reading `~/.claude/skills/brag/SKILL.md` and following its steps first (the `brag` skill is disable-model-invocation, so invoke its steps directly rather than calling it as a skill). Then re-read `brag-doc.md` before continuing.
+3. **Ensure `~/.claude/brag-doc.md` has an entry for the target month.** Read it. If no heading exists for the target month, inline the `/brag` workflow by reading `~/.claude/skills/brag/SKILL.md` and following its steps first, using this skill's target month as brag's target month (brag defaults to the current month otherwise; the `brag` skill is disable-model-invocation, so invoke its steps directly rather than calling it as a skill). Then re-read `brag-doc.md` before continuing.
 
 4. **Gather signals.** Run these in parallel where possible:
 
    a. **PRs authored by me, created in month:**
       ```
-      gh search prs --author="@me" --created="<since+1>..<until>" --limit 100 \
+      gh search prs --author="@me" --created="<since+1>..<until>" --limit 1000 \
         --json number,title,repository,state,url,createdAt
       ```
 
    b. **PRs merged in month but created earlier** (catches cross-month work):
       ```
-      gh search prs --author="@me" --closed="<since+1>..<until>" --state=closed --limit 100 \
+      gh search prs --author="@me" --closed="<since+1>..<until>" --state=closed --limit 1000 \
         --json number,title,repository,state,url,createdAt,closedAt
       ```
       Filter results to `state == "merged"` and `createdAt < since+1` to avoid double-counting (a).
 
    c. **PRs I reviewed in month:**
       ```
-      gh search prs --reviewed-by="@me" --created="<since+1>..<until>" --limit 100 \
+      gh search prs --reviewed-by="@me" --created="<since+1>..<until>" --limit 1000 \
         --json number,title,repository,author,url
       ```
-      Aggregate by `repository.name` and by `author.login`. Exclude `dependabot[bot]` and self (`denniskigen`). Surface: total PRs reviewed on others' work, distinct contributor count, top contributor by review volume.
+      Aggregate by `repository.name` and by `author.login`. Exclude `openmrs-bot` and self (`denniskigen`). Surface: total PRs reviewed on others' work, distinct contributor count, top contributor by review volume.
 
    d. **Jira tickets I reported with activity in month:**
-      Use `mcp__jira__searchJiraIssues` with JQL:
+      Use `mcp__jira__searchJiraIssues` with `maxResults: 200` and JQL:
       ```
-      reporter = currentUser() AND updated >= "<since+1>" AND updated <= "<until>" ORDER BY updated DESC
+      reporter = "Dennis Kigen" AND updated >= "<since+1>" AND updated < "<until+1>" ORDER BY updated DESC
       ```
+      Use the display name, not `currentUser()`: the Jira MCP authenticates as a different account, so `currentUser()` matches the wrong user.
+      If the `jira` MCP is down, use the Atlassian connector's `searchJiraIssuesUsingJql` (`cloudId: openmrs.atlassian.net`, `maxResults: 100`, follow `nextPageToken`) with the same JQL.
       Note which are `Done` — those represent completed backlog items the user shaped.
 
-   e. **`o3-docs` commits:**
+   e. **`o3-docs` PRs merged in month:**
       ```
-      git -C ~/Code/o3-docs log --author=denniskigen --since=<since+1> --until=<until+1> \
-        --pretty=format:"%h %ai %s"
+      gh search prs --author="@me" --repo=openmrs/openmrs-contrib-o3-docs --merged-at="<since+1>..<until>" \
+        --limit 100 --json number,title,url,closedAt
       ```
 
 5. **Produce four output blocks in memory** (do NOT write them to files):
