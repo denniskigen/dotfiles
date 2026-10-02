@@ -8,3 +8,6 @@ claude/settings.local.json
 
 # AMRS concept dictionary snapshot. Org metadata, and this repo is public.
 claude/skills/port-openmrs-form/assets/
+
+# Skills the Claude app syncs from claude.ai. App-managed cache, not config.
+claude/skills/synced/
