@@ -3,6 +3,9 @@
     "defaultMode": "auto"
   },
   "model": "claude-fable-5[1m]",
+  "env": {
+    "AGENT_NATIVE_PLANS_MODE": "local-files"
+  },
   "skillOverrides": {
     "update-repos": "off"
   },
