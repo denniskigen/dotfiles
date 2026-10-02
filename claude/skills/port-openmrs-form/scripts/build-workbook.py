@@ -47,16 +47,20 @@ def load_json(path):
         return json.load(handle)
 
 
-def concept_verdict(concept, local, live, has_metadata):
+def concept_verdict(concept, local, live, has_metadata, snapshot_date=None):
     """(match status, evidence) — terse and decision-relevant. Only live target
-    metadata is authoritative: local definitions or usage in other forms do not
-    prove a concept exists on the target."""
+    metadata is authoritative: local definitions, usage in other forms, and
+    dictionary snapshots do not prove a concept exists on the target."""
     if not concept.get("uuid"):
         return "No safe live match", "No concept in source"
     definitions = local.get("definitions") or []
     defined = "; defined in " + definitions[0]["file"].rsplit("/", 1)[-1] if definitions else ""
     if not has_metadata or not live:
         return None, "Not checked live" + defined
+    if snapshot_date is not None:
+        # Snapshots list active concepts only, so absent may still mean retired on the target.
+        state = "Active" if live.get("exists") and not live.get("retired") else "Not active"
+        return None, "{} in snapshot ({}){}".format(state, snapshot_date or "undated", defined)
     if not live.get("exists"):
         return "No safe live match", "Not on target" + defined
     if live.get("retired"):
@@ -84,6 +88,8 @@ def main():
     concepts = inventory.get("concepts", [])
     checked_on = metadata.get("checkedAt") or crosswalk.get("checkedAt") or ""
     checked_on = checked_on[:10]
+    from_snapshot = (metadata.get("source") == "dictionary-snapshot"
+                     or str(metadata.get("targetBaseUrl") or "").startswith("snapshot:"))
 
     workbook = openpyxl.Workbook()
 
@@ -96,7 +102,8 @@ def main():
         live = metadata_concepts.get(uuid, {})
         definitions = local.get("definitions") or []
         proposed = live.get("name") or (definitions[0]["name"] if definitions else None)
-        status, evidence = concept_verdict(concept, local, live, bool(metadata_concepts))
+        status, evidence = concept_verdict(concept, local, live, bool(metadata_concepts),
+                                           checked_on if from_snapshot else None)
         rows.append((
             index + 1,
             ", ".join(concept.get("roles", [])),
@@ -153,10 +160,12 @@ def main():
 
     results = workbook.create_sheet("Build Results")
     # The "Encounter type UUID" cell is what apply-decisions.py treats as decided, so it
-    # only carries the source value when live metadata confirms it exists and is active.
+    # only carries the source value when live metadata, not a snapshot, confirms it
+    # exists and is active.
     live_encounter = metadata.get("encounterType") or {}
     declared_encounter = form.get("encounterType")
-    encounter_confirmed = (bool(declared_encounter) and live_encounter.get("uuid") == declared_encounter
+    encounter_confirmed = (bool(declared_encounter) and not from_snapshot
+                           and live_encounter.get("uuid") == declared_encounter
                            and live_encounter.get("exists") and not live_encounter.get("retired"))
     entries = [
         ("Form name", form.get("name")),

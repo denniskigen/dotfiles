@@ -10,9 +10,11 @@ Reads:
   (set them there once decided).
 - Concept Decisions: rows with an "Approved target UUID" different from "Concept UUID"
   are remapped everywhere in the form, including inside expressions. Rows whose
-  Team decision is "Remove from target form" have their questions and answers removed.
+  Team decision is "Remove from target form" have their questions and answers removed,
+  including questions nested in groups.
 
-Prints what was applied and how many concept rows still have no team decision.
+Prints what was applied and how many concept rows have no team decision or are marked
+"Needs team decision".
 Works on Python 3.9+ and needs only openpyxl.
 """
 
@@ -61,7 +63,7 @@ def main():
             removals.add(uuid)
         elif approved and approved != uuid:
             remaps[uuid] = approved
-        elif not decision:
+        elif not decision or decision == "Needs team decision":
             pending += 1
 
     with open(args.candidate, encoding="utf-8") as handle:
@@ -71,21 +73,28 @@ def main():
     form = json.loads(text)
 
     removed_questions, removed_answers = 0, 0
+
+    def prune(questions):
+        nonlocal removed_questions, removed_answers
+        kept = []
+        for question in questions:
+            options = question.get("questionOptions", {})
+            if options.get("concept") in removals:
+                removed_questions += 1
+                continue
+            answers = options.get("answers")
+            if answers:
+                filtered = [a for a in answers if a.get("concept") not in removals]
+                removed_answers += len(answers) - len(filtered)
+                options["answers"] = filtered
+            if question.get("questions"):
+                question["questions"] = prune(question["questions"])
+            kept.append(question)
+        return kept
+
     for page in form.get("pages", []):
         for section in page.get("sections", []):
-            kept = []
-            for question in section.get("questions", []):
-                options = question.get("questionOptions", {})
-                if options.get("concept") in removals:
-                    removed_questions += 1
-                    continue
-                answers = options.get("answers")
-                if answers:
-                    filtered = [a for a in answers if a.get("concept") not in removals]
-                    removed_answers += len(answers) - len(filtered)
-                    options["answers"] = filtered
-                kept.append(question)
-            section["questions"] = kept
+            section["questions"] = prune(section.get("questions", []))
 
     encounter_uuid = overview.get("Encounter type UUID")
     if encounter_uuid:
@@ -107,7 +116,7 @@ def main():
     print("Applied: {} concept remap(s), {} question removal(s), {} answer removal(s).".format(
         len(remaps), removed_questions, removed_answers))
     print("Encounter type UUID: {}; form UUID: {}.".format(encounter_uuid or "(not set)", form_uuid or "(not set)"))
-    print("Concept rows with no team decision: {}.".format(pending))
+    print("Concept rows with no team decision or \"Needs team decision\": {}.".format(pending))
     if pending or not encounter_uuid or not form_uuid:
         print("Not release-ready: resolve pending rows and the header-block UUIDs, then rerun validation.")
 

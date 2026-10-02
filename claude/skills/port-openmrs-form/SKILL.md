@@ -1,6 +1,6 @@
 ---
 name: port-openmrs-form
-description: Port paper, text, PDF, Word, spreadsheet, HTML, legacy OpenMRS, or O3 JSON forms into a target OpenMRS O3 implementation through source inventory, concept review, team decisions, redesign, encounter metadata, JSON generation, validation, and Form Builder preview. Use for new or resumed form ports, review workbooks, concept crosswalks, O3 schema generation or repair, field-ID normalization, and steps 1–7 forms-team handoffs.
+description: Port paper, text, PDF, Word, spreadsheet, HTML, legacy OpenMRS, or O3 JSON forms into AMRS (AMPATH's OpenMRS), whose forms run on the Angular form engine (openmrs-ngx-formentry), through source inventory, concept review, team decisions, redesign, encounter metadata, JSON generation, validation, and Form Builder preview. Use for new or resumed AMRS form ports, review workbooks, concept crosswalks, AMRS form schema generation or repair, field-ID normalization, and steps 1–7 forms-team handoffs. Not for forms rendered by the React form engine (openmrs-esm-form-engine-lib).
 ---
 
 # Port an OpenMRS form
