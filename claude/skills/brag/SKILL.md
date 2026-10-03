@@ -11,7 +11,7 @@ Update the brag document at `~/.claude/brag-doc.md` with recent work. Follow the
 
 2. Determine the target month. If `$ARGUMENTS` is provided, use that (e.g., "february 2026"). Otherwise, use the current month.
 
-3. Find all `openmrs-esm-*` and `openmrs-module-*` repos directly under `~/Code/OpenMRS/` (`ls -d ~/Code/OpenMRS/openmrs-esm-*/ ~/Code/OpenMRS/openmrs-module-*/`). Don't descend into `~/Code/OpenMRS/worktrees/`. Those are PR checkouts and would double-count your commits.
+3. Find all `openmrs-esm-*` and `openmrs-module-*` repos directly under `~/Code/OpenMRS/`, skipping review clones (`ls -d ~/Code/OpenMRS/openmrs-esm-*/ ~/Code/OpenMRS/openmrs-module-*/ | grep -v -- '-review/$'`). Don't descend into `~/Code/OpenMRS/worktrees/`. Review clones and worktrees are PR checkouts of the same repos, so their default branch would double-count your commits. Count each commit SHA once.
 
 4. For each repo, collect your commits for the target month. Read the default branch (`git -C <repo> symbolic-ref --short refs/remotes/origin/HEAD`, else `origin/main` or `origin/master`) after a `git -C <repo> fetch --quiet`, and filter by email (`git config user.email`). Most clones sit on a feature branch where squash-merged work doesn't show, and your commits use more than one author name. For example: `git -C <repo> log origin/main --author="$(git config user.email)" --since='<YYYY-MM-01> 00:00' --until='<first day of next month> 00:00'`.
 
