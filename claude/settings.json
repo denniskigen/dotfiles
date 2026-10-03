@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "ask": [
+      "Bash(git push *)"
+    ]
   },
   "model": "claude-fable-5[1m]",
   "env": {
@@ -8,6 +11,11 @@
   },
   "skillOverrides": {
     "update-repos": "off"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
   },
   "hooks": {
     "UserPromptSubmit": [
