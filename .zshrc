@@ -129,11 +129,11 @@ alias copystageddiff="git diff --staged | pbcopy"
 alias wip="git commit -m 'WIP' --no-verify"
 alias delete-merged="git branch --merged | grep -Ev '(^\*|master|main|dev)' | xargs git branch -d"
 alias grohm="git reset --hard origin/main"
-alias gdiff='commits=$(git rev-list --count main...HEAD) && git diff HEAD~$commits HEAD | pbcopy'
+alias gdiff='prdiff'
 alias gd='gdiff'
 alias delete-prev-branch='git rev-parse --abbrev-ref @{-1} | grep -qE "^(main|master)$" && echo "Cannot delete main/master branch" || git branch -D @{-1}'
-alias commits-over-main="git rev-list --count main...HEAD"
-alias squash-to-main='count=$(git rev-list --count main...HEAD) && git reset --soft HEAD~$count && git commit'
+alias commits-over-main="git rev-list --count main..HEAD"
+alias squash-to-main='git reset --soft $(git merge-base main HEAD) && git commit'
 alias gbr="git branch --sort=-committerdate | grep -v \"main\" | head -n 5"
 alias gfiles="git diff-tree --no-commit-id --name-only -r HEAD"
 alias gundo="git reset --soft HEAD^"
@@ -170,7 +170,7 @@ alias yttw="reset && yarn turbo test:watch"
 alias ytl="yarn turbo lint"
 alias ytlf="yarn turbo lint --force"
 alias ytty="yarn turbo typescript"
-alias yss="yarn start --sources="
+alias yss="yarn start --sources"
 alias -g BL='--backend=http://localhost'
 alias yui="yarn upgrade-interactive"
 
@@ -204,7 +204,7 @@ respawn() {
 alias resp="respawn"
 alias cres="clear && respawn && clear"
 alias q="exit"
-function killport() { lsof -i :$1 | awk 'NR!=1 {print $2}' | xargs kill -9; }
+function killport() { lsof -ti tcp:"$1" -sTCP:LISTEN | xargs kill; }
 alias kn="killall node"
 
 # OpenMRS-specific aliases
