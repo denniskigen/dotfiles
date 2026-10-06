@@ -7,7 +7,7 @@ disable-model-invocation: true
 Generate a morning context pack for the day's OpenMRS work. The goal is a short, prioritized triage board of what needs attention now, split into "your turn" and "waiting on others". It is not a report and not a narrative. Follow these steps:
 
 1. Freshen local repos.
-   - Run `~/.claude/skills/update-repos/scripts/update-repos.sh` to fast-forward local OpenMRS repos under `~/Code/OpenMRS/`. It is safe by design and only touches clean, non-diverged branches. Run the script directly: the `update-repos` skill is turned off in settings, so it can't be invoked from here.
+   - Run `~/.claude/skills/update-repos/scripts/update-repos.sh` to fast-forward local OpenMRS repos directly under `~/Code/` or under `~/Code/OpenMRS/`. It is safe by design and only touches clean, non-diverged branches. Run the script directly: the `update-repos` skill is turned off in settings, so it can't be invoked from here.
    - Summarize in one line: which repos advanced. Do not list repos that were already up to date.
 
 2. PRs awaiting your review.

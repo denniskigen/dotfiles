@@ -15,8 +15,11 @@ function loadPlaywright() {
   const searchPaths = [
     process.env.PLAYWRIGHT_DIR,
     process.cwd(),
+    // Repos live under ~/Code/OpenMRS on some machines and directly under ~/Code on others
     path.join(os.homedir(), 'Code/OpenMRS/openmrs-esm-patient-chart'),
     path.join(os.homedir(), 'Code/OpenMRS/openmrs-esm-core'),
+    path.join(os.homedir(), 'Code/openmrs-esm-patient-chart'),
+    path.join(os.homedir(), 'Code/openmrs-esm-core'),
   ].filter(Boolean);
   // Each repo pins its own Playwright version, and only some have their browser downloaded
   for (const dir of searchPaths) {

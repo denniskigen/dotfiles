@@ -4,7 +4,7 @@
 //   node preview.mjs --out ./out --o3 all \
 //     --carbon white-paper,contract \
 //     --svg draft=./draft.svg \
-//     --jsx form-builder=~/Code/OpenMRS/openmrs-esm-form-builder/src/components/header/illustration.component.tsx \
+//     --jsx form-builder=$O3_REPOS_DIR/openmrs-esm-form-builder/src/components/header/illustration.component.tsx \
 //     --header draft=./draft.svg --header registration=<svgs>/registration.svg --title "Visit Summary Configuration"
 //
 // Writes preview.html and preview.png (2x) to --out.

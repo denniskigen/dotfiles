@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 Generate a standup update for the last 2 weeks. Follow these steps:
 
-1. Find all `openmrs-esm-*` and `openmrs-module-*` repos directly under `~/Code/OpenMRS/`, skipping review clones (`ls -d ~/Code/OpenMRS/openmrs-esm-*/ ~/Code/OpenMRS/openmrs-module-*/ | grep -v -- '-review/$'`). Don't descend into `~/Code/OpenMRS/worktrees/`. Review clones and worktrees are PR checkouts of the same repos, so their default branch would double-count your commits. Count each commit SHA once.
+1. Find all `openmrs-esm-*` and `openmrs-module-*` repos directly under `~/Code/` or under `~/Code/OpenMRS/`, skipping review clones (`find ~/Code ~/Code/OpenMRS -mindepth 1 -maxdepth 1 -type d \( -name 'openmrs-esm-*' -o -name 'openmrs-module-*' \) ! -name '*-review' 2>/dev/null`). Don't descend into worktree folders. Review clones and worktrees are PR checkouts of the same repos, so their default branch would double-count your commits. Count each commit SHA once.
 
 2. For each repo, collect your commits from the last 2 weeks. Read the default branch (`git -C <repo> symbolic-ref --short refs/remotes/origin/HEAD`, else `origin/main` or `origin/master`) after a `git -C <repo> fetch --quiet`, and filter by email (`git config user.email`). Most clones sit on a feature branch where squash-merged work doesn't show, and your commits use more than one author name. For example: `git -C <repo> log origin/main --author="$(git config user.email)" --since='2 weeks ago'`.
 

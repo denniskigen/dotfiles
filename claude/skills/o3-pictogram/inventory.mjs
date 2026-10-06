@@ -2,7 +2,7 @@
 // Inventory of styleguide pictograms and where they are used, plus app-local
 // header illustrations that do not come from the styleguide.
 //
-//   node inventory.mjs                                  # every non-archived openmrs-esm-* checkout under $O3_REPOS_DIR or ~/Code/OpenMRS
+//   node inventory.mjs                                  # every non-archived openmrs-esm-* checkout under $O3_REPOS_DIR, ~/Code/OpenMRS or ~/Code
 //   node inventory.mjs --repo ./fixture/esm-core --repo ./fixture/admin-tools --esm-core ./fixture/esm-core
 //   node inventory.mjs --github --out inventory.md      # also query GitHub code search (partial results)
 //   node inventory.mjs --include-archived               # also search the ARCHIVED repos below
@@ -21,7 +21,19 @@ const ARCHIVED = new Set(['openmrs-esm-form-entry', 'openmrs-esm-home', 'openmrs
 
 const args = parseArgs(process.argv.slice(2), { repeatable: ['repo'], booleans: ['github', 'include-archived'] });
 const reposDir = expandHome(args.repos || DEFAULT_REPOS_DIR);
-const found = fs.existsSync(reposDir) ? fs.readdirSync(reposDir).filter((d) => d.startsWith('openmrs-esm-')) : [];
+// Only a folder named after its origin repo counts. Branch checkouts and review
+// clones of the same repo would count its usage again.
+const isCanonical = (d) => {
+  try {
+    const url = execFileSync('git', ['remote', 'get-url', 'origin'], { cwd: path.join(reposDir, d), stdio: ['ignore', 'pipe', 'ignore'] });
+    return path.basename(url.toString().trim(), '.git') === d;
+  } catch {
+    return false;
+  }
+};
+const found = fs.existsSync(reposDir)
+  ? fs.readdirSync(reposDir).filter((d) => d.startsWith('openmrs-esm-') && isCanonical(d))
+  : [];
 const skippedArchived = args.repo || args['include-archived'] ? [] : found.filter((d) => ARCHIVED.has(d));
 const repos = args.repo
   ? args.repo.map(expandHome)
@@ -70,6 +82,8 @@ const illustrations = [];
 for (const repo of repos) {
   if (!fs.existsSync(repo)) continue;
   for (const rel of sourceFiles(repo)) {
+    // git ls-files still lists files deleted from the working tree
+    if (!fs.existsSync(path.join(repo, rel))) continue;
     const src = fs.readFileSync(path.join(repo, rel), 'utf8');
     const where = `${path.basename(repo)}/${rel}`;
     for (const m of new Set([...src.matchAll(/\b([A-Z]\w*Pictogram)\b/g)].map((x) => x[1]))) {

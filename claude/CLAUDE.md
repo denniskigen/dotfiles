@@ -43,7 +43,7 @@
 - Always post review comments inline in the chat thread first for approval before posting on GitHub
 
 ## OpenMRS Workflow
-- When investigating backend behavior for openmrs-esm-* repos, check sibling openmrs-module-* repos in ~/Code/OpenMRS/ first before searching GitHub. If the module isn't cloned yet, find it on GitHub and clone it
+- When investigating backend behavior for openmrs-esm-* repos, check sibling openmrs-module-* repos in ~/Code/ or ~/Code/OpenMRS/ first before searching GitHub. If the module isn't cloned yet, find it on GitHub and clone it
 - When reviewing frontend PRs that touch API calls or make claims about backend behavior, verify against the actual backend module code
 - When creating PRs, always use the repo's PR template from `.github/pull_request_template.md` as the body structure. Fill in each section appropriately and check the requirement boxes that apply. Check existing human-authored PRs for convention
 - Keep all PR template section headers (validators may require them), but leave non-applicable sections empty rather than adding filler. Don't write things like "N/A — dependency pin, no UI changes", "N/A — no Jira ticket", or "Dependency pin only; no functional or UI changes." If a section has nothing real to say, leave it blank under the header

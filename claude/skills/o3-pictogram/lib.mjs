@@ -4,7 +4,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
-export const DEFAULT_REPOS_DIR = process.env.O3_REPOS_DIR || path.join(os.homedir(), 'Code', 'OpenMRS');
+// Repos live under ~/Code/OpenMRS on some machines and directly under ~/Code on others
+const OPENMRS_DIR = path.join(os.homedir(), 'Code', 'OpenMRS');
+export const DEFAULT_REPOS_DIR =
+  process.env.O3_REPOS_DIR || (fs.existsSync(OPENMRS_DIR) ? OPENMRS_DIR : path.join(os.homedir(), 'Code'));
 export const DEFAULT_CHROME =
   process.env.CHROME_PATH ||
   [

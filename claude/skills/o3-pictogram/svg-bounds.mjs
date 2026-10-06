@@ -2,7 +2,7 @@
 // Measure the drawn area of every styleguide pictogram, and where drafts fall
 // against that range.
 //
-//   node svg-bounds.mjs --esm-core ~/Code/OpenMRS/openmrs-esm-core draft.svg
+//   node svg-bounds.mjs --esm-core $O3_REPOS_DIR/openmrs-esm-core draft.svg
 //
 // Bounds come from getBBox() on the root <svg>, which covers the filled
 // geometry of its children. It ignores stroke width, and any invisible

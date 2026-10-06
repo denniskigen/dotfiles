@@ -102,7 +102,7 @@ The test for done: a reviewer gets the whole change from the first sentence, and
 
 ## OpenMRS Defaults
 
-- Repos live under `~/Code/OpenMRS/`.
+- Repos live directly under `~/Code/` or under `~/Code/OpenMRS/`, depending on the machine.
 - Use the `gh` CLI for GitHub operations.
 - Translations: hand-edit only `en.json`; other locales sync via Transifex.
 - Default local backend base URL is `http://localhost`.

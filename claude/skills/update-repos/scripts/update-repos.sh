@@ -3,7 +3,9 @@
 # Never merges, rebases, resets or stashes.
 set -u
 
-for repo in ~/Code/OpenMRS/openmrs-*/; do
+# Repos live directly under ~/Code on some machines and under ~/Code/OpenMRS on
+# others. A glob that matches nothing stays literal and fails the git check below.
+for repo in ~/Code/openmrs-*/ ~/Code/OpenMRS/openmrs-*/; do
   name=$(basename "$repo")
   git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 || continue
   case "$name" in *-review) echo "SKIP    $name (review clone)"; continue ;; esac

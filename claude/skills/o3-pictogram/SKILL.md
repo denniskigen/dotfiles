@@ -15,7 +15,7 @@ Approvals, credentials and writing style come from the user's own setup. If `$AR
 
 ## Scripts
 
-All scripts take paths as arguments. Repos default to `$O3_REPOS_DIR` or `~/Code/OpenMRS`, and Chrome is found at the standard locations (override with `--chrome` or `CHROME_PATH`). Write every output to one directory per task, because the user reviews it. `README.md` has example commands.
+All scripts take paths as arguments. Repos default to `$O3_REPOS_DIR`, then `~/Code/OpenMRS` if it exists, then `~/Code`, and Chrome is found at the standard locations (override with `--chrome` or `CHROME_PATH`). Write every output to one directory per task, because the user reviews it. `README.md` has example commands.
 
 | Script | Use it for |
 |---|---|

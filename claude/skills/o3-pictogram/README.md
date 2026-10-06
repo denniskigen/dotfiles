@@ -18,7 +18,7 @@ Copy every file in this gist into one folder named `o3-pictogram` in your agent'
 
 - Node 18 or newer. The scripts have no npm dependencies.
 - Chrome or Chromium, for rendering. Standard macOS and Linux paths are detected. Otherwise set `CHROME_PATH` or pass `--chrome`.
-- Local checkouts of the O3 repos. Set `O3_REPOS_DIR` to the folder that contains them (the default is `~/Code/OpenMRS`), or pass paths explicitly.
+- Local checkouts of the O3 repos. Set `O3_REPOS_DIR` to the folder that contains them (the default is `~/Code/OpenMRS` if it exists, otherwise `~/Code`), or pass paths explicitly.
 - Optional: `gh`, for `inventory.mjs --github`.
 - Network access to jsDelivr the first time `carbon-search.mjs` or `preview.mjs --carbon` runs, unless `@carbon/pictograms` is already installed nearby.
 
