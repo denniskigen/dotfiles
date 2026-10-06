@@ -25,22 +25,52 @@ fi
 
 payload="$(cat)"
 cmd="$(jq -r '.tool_input.command // empty' <<<"$payload")"
-grep -Eq '(^|[;&|(])[[:space:]]*gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$)' <<<"$cmd" || exit 0
+grep -Eq '(^|[;&|(])[[:space:]]*gh[[:space:]]+pr[[:space:]]+create([[:space:];&|)]|$)' <<<"$cmd" || exit 0
+
+# Expands $NAME and ${NAME} from assignments made earlier in the command, then
+# from the environment. Fails when a name is unset or the text runs a command.
+vars=""
+expand() {
+  local s="$1" token name value
+  while IFS= read -r token; do
+    name="$(sed -E 's/^\$\{?([A-Za-z0-9_]+)\}?$/\1/' <<<"$token")"
+    value="$(sed -n "s/^$name=//p" <<<"$vars" | tail -1)"
+    [ -n "$value" ] || value="${!name:-}"
+    [ -n "$value" ] || return 1
+    s="${s%%"$token"*}$value${s#*"$token"}"
+  done < <(grep -oE '\$\{?[A-Za-z_][A-Za-z0-9_]*\}?' <<<"$s")
+  case "$s" in *'$'* | *'`'*) return 1 ;; esac
+  printf '%s\n' "$s"
+}
 
 # The Bash tool resets its working directory between calls, so a command aimed
-# at another repo usually starts with `cd <repo> &&`.
+# at another repo cds into it, often after other statements such as writing the
+# PR body. Follow each cd that runs before gh pr create, in order.
 dir="$(jq -r '.cwd // empty' <<<"$payload")"
-cd_re='^[[:space:]]*cd[[:space:]]+([^[:space:];&|]+)[[:space:]]*&&'
-if [[ $cmd =~ $cd_re ]]; then
-  target="${BASH_REMATCH[1]}"
-  target="${target//\"/}"
-  target="${target//\'/}"
-  target="${target/#\~/$HOME}"
-  case "$target" in
-    /*) dir="$target" ;;
-    *) dir="$dir/$target" ;;
+stmt_re='(^|[;&|(])[[:space:]]*(cd[[:space:]]+[^[:space:];&|)]+|[A-Za-z_][A-Za-z0-9_]*=[^[:space:];&|)]*|gh[[:space:]]+pr[[:space:]]+create)'
+while IFS= read -r stmt; do
+  stmt="$(sed -E 's/^[;&|(]?[[:space:]]*//' <<<"$stmt" | tr -d "\"'")"
+  case "$stmt" in
+    gh[[:space:]]*) break ;;
+    cd[[:space:]]*)
+      raw="${stmt#cd}"
+      raw="${raw#"${raw%%[![:space:]]*}"}"
+      if ! target="$(expand "$raw")"; then
+        echo "Blocked: can't tell which repo \`cd $raw\` points to, so the self-review check can't run. Use a literal path in the cd before gh pr create, then retry." >&2
+        exit 2
+      fi
+      target="${target/#\~/$HOME}"
+      case "$target" in
+        /*) dir="$target" ;;
+        *) dir="$dir/$target" ;;
+      esac
+      ;;
+    *)
+      value="$(expand "${stmt#*=}")" || value=""
+      vars="$vars"$'\n'"${stmt%%=*}=$value"
+      ;;
   esac
-fi
+done < <(grep -oE "$stmt_re" <<<"$cmd")
 
 git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || exit 0
 remotes="$(git -C "$dir" remote -v)"
