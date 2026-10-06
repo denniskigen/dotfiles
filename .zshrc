@@ -74,7 +74,7 @@ o3-sync-fresh() {
   TAG=nightly docker compose up -d --pull always --force-recreate --wait
 }
 
-# Sync distro config from origin/main, then refresh nightly images
+# Sync distro config from origin/main, refresh nightly images, then prune the replaced ones
 o3-sync-rebuild() {
   cd ~/Code/openmrs-distro-referenceapplication || return 1
 
@@ -92,7 +92,8 @@ o3-sync-rebuild() {
 
   git fetch origin &&
   git pull --ff-only &&
-  TAG=nightly docker compose up -d --pull always --force-recreate --wait
+  TAG=nightly docker compose up -d --pull always --wait &&
+  docker image prune -f
 }
 
 # Git aliases
