@@ -29,7 +29,13 @@ If the user invoked this skill themselves (`/o3-pr-create`) or asked for the com
    - No `Co-Authored-By` lines. No "Generated with Claude Code" tagline.
    - No em dashes in commit text. Restructure with periods or commas.
 
-4. Draft the PR title and body for approval.
+4. Self-review the branch before pushing.
+   - Review the branch with the `o3-pr-review` skill in Pre-PR Self-Review Mode, treating it as any other contributor's PR.
+   - Share the findings in chat first. Fix real findings on the branch once the user agrees, before drafting the PR body. If the fixes add commits, review only those commits (Rereview Mode).
+   - Once the review is clean, or the user has decided on every finding, record the reviewed HEAD from the repo directory, in its own command: `~/.claude/skills/o3-pr-create/scripts/self-review-gate.sh --mark`.
+   - A PreToolUse hook blocks `gh pr create` in any repo with an OpenMRS remote until HEAD is recorded, so a commit added after the mark needs its own review. Only the user can waive the review.
+
+5. Draft the PR title and body for approval.
    - Read `.github/pull_request_template.md` in the repo and use it as the body structure. Templates differ per repo, so read the actual file each time. Backend repos differ: `openmrs-core`, `openmrs-module-webservices.rest` and `openmrs-module-fhir2` use an uppercase `.github/PULL_REQUEST_TEMPLATE.md` with their own sections, and many modules (queue, emrapi, billing) have none. With no template, copy the shape of recent merged human-authored PRs in that repo.
    - Keep every template section header (validators may require them). Leave a section blank under its header when there is nothing real to say, except Summary: where the frontend PR description check runs, it fails on an empty Summary. Do not write filler like "N/A", "no UI changes", or "dependency pin only".
    - Write the prose as a human would: describe the problem and the change directly. Skip generic Summary/Motivation/Test-plan scaffolding unless the template's own headers call for it.
@@ -41,19 +47,14 @@ If the user invoked this skill themselves (`/o3-pr-create`) or asked for the com
    - No em dashes anywhere in the body.
    - Show the full draft (title plus body) to the user and get approval before creating the PR.
 
-5. Push (gated).
+6. Push (gated).
    - Confirm with the user before running `git push`. This is a hard rule, even when the skill was explicitly invoked.
    - Push the branch to the contributor's fork or the upstream remote per the repo's contribution model.
 
-6. Open the PR (gated).
+7. Open the PR (gated).
    - Create the PR with `gh pr create` using the approved title and body.
-   - Do not open the PR until both the push is done and the body is approved.
+   - Do not open the PR until the current HEAD is self-reviewed, the push is done, and the body is approved.
    - Report the PR URL. Note any follow-ups: screenshot still needed, paired backend/distro PR to land first, or Transifex sync for new strings.
-
-7. Self-review the PR.
-   - Right after creating the PR, review it with the `o3-pr-review` skill, treating it as any other contributor's PR.
-   - Share the findings in chat first. Do not post anything to the PR or push fixes without approval.
-   - If a finding is real, fix it on the branch (push gated as above) rather than leaving it for reviewers to catch.
 
 ## Approval Gates
 
@@ -61,7 +62,7 @@ Hard stops, in order:
 
 - Commit: authorized when the user invoked this skill or asked for the commit; otherwise confirm first. Still show the commit plan (subjects and which files go in which commit) before committing if the change spans multiple concerns.
 - Push: never run `git push` without explicit confirmation in this session.
-- Open PR: never run `gh pr create` until the title and body are approved verbatim.
+- Open PR: never run `gh pr create` until the current HEAD has been self-reviewed and the title and body are approved verbatim.
 
 ## Commit Conventions
 
@@ -103,11 +104,11 @@ The test for done: a reviewer gets the whole change from the first sentence, and
 
 1. Branch name and why (new branch vs existing).
 2. Commit plan: subject lines, bodies, and which files belong to each commit.
-3. Draft PR title (conventional, with ticket number when present).
-4. Draft PR body filled from the repo template, headers kept, non-applicable sections blank, applicable boxes checked.
-5. Outstanding gates: confirm push, then confirm PR creation.
-6. After creation: the PR URL and any follow-ups (screenshot, paired PR, Transifex).
-7. Self-review findings from `o3-pr-review`, shared in chat for approval before any fixes or PR comments.
+3. Self-review findings from `o3-pr-review`, shared in chat for approval before any fixes.
+4. Draft PR title (conventional, with ticket number when present).
+5. Draft PR body filled from the repo template, headers kept, non-applicable sections blank, applicable boxes checked.
+6. Outstanding gates: confirm push, then confirm PR creation.
+7. After creation: the PR URL and any follow-ups (screenshot, paired PR, Transifex).
 
 ## Attribution
 - Never include a Claude attribution footer in PR bodies, comments or review replies,

@@ -1,11 +1,11 @@
 ---
 name: o3-pr-review
-description: "Use when reviewing OpenMRS or O3 pull requests, rereviewing latest commits, validating findings, or drafting evidence-backed inline review comments."
+description: "Use when reviewing OpenMRS or O3 pull requests, rereviewing latest commits, self-reviewing a branch before opening its PR, validating findings, or drafting evidence-backed inline review comments."
 ---
 
 # O3 PR Review
 
-Use this for OpenMRS/O3 PR reviews, rereviews, "validate those findings", review-comment drafting, and latest-commit review on an existing PR.
+Use this for OpenMRS/O3 PR reviews, rereviews, pre-PR self-reviews of a local branch, "validate those findings", review-comment drafting, and latest-commit review on an existing PR.
 
 ## Workflow
 
@@ -82,6 +82,16 @@ Use this when the human reviewer asks for the latest upstream commits, a rerevie
 3. Report prior feedback status.
    - Use `fixed`, `still open`, `superseded`, or `not enough evidence`.
    - Draft new inline comments only for still-actionable issues.
+
+## Pre-PR Self-Review Mode
+
+Use this when reviewing a local branch before its PR exists, for example from `o3-pr-create`.
+
+1. Scope the review to the branch.
+   - Read the diff against the base branch (`git diff <base>...HEAD`) and the commit messages in place of the PR title, body, and changed files.
+   - There is no discussion yet, so skip the Discussion Review Gate. Still read the ticket and build the series map when they apply.
+2. Run the rest of the workflow unchanged: inspect the code, validate, run the inventory groups for the review mode, and adversarially verify high-stakes findings.
+3. Report findings for the author to fix on the branch, not comments to post. Use the initial-review Output Shape without the suggested inline comments.
 
 ## Finding Validation Gate
 
