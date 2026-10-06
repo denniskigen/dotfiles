@@ -121,6 +121,7 @@ alias fwl="git push --force-with-lease"
 alias gsl="git stash list"
 alias gsa="git stash apply"
 alias gpc="gh pr checkout"
+alias gpcf="gh pr checkout --force"
 alias prev-branch="git checkout -"
 alias copydiff="git diff HEAD | pbcopy"
 alias copystageddiff="git diff --staged | pbcopy"
@@ -142,6 +143,8 @@ alias gcane="git commit --amend --no-edit"
 alias gss="git status -s"
 alias prdiff="git --no-pager diff main...HEAD | pbcopy"
 alias prdiff-no-lock="git --no-pager diff main...HEAD -- ':(exclude)yarn.lock' | pbcopy"
+alias prshow="git diff main...HEAD"
+alias prfiles="git diff --stat main...HEAD"
 
 # Yarn aliases
 alias yv="yarn verify"
@@ -167,6 +170,7 @@ alias ytl="yarn turbo lint"
 alias ytlf="yarn turbo lint --force"
 alias ytty="yarn turbo typescript"
 alias yss="yarn start --sources="
+alias -g BL='--backend=http://localhost'
 alias yui="yarn upgrade-interactive"
 
 # PNPM aliases
@@ -210,6 +214,32 @@ alias bump-common-lib="yarn up @openmrs/esm-patient-common-lib@next && gco packa
 alias resolve-yarn="git checkout HEAD yarn.lock && yarn"
 alias npxdev="npx openmrs develop --sources"
 omrs-shell-local() {
-  (cd ~/Code/openmrs-esm-core && OMRS_PROXY_TARGET="${1:-http://localhost}" yarn run run:shell)
+  (cd ~/Code/openmrs-esm-core && OMRS_PROXY_TARGET="${1:-http://localhost}" yarn run:shell)
 }
 
+export PATH="$HOME/.local/bin:$PATH"
+
+# Load Angular CLI autocompletion.
+source <(ng completion script)
+
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"
+
+# Unversioned python/pip symlinks from Homebrew python@3.14
+export PATH="/opt/homebrew/opt/python@3.14/libexec/bin:$PATH"
+
+# Local JDKs in ~/.jdks (installed 2026-07-14; SDKMAN can adopt these later via `sdk install java <name> --local <path>`)
+export JDK8_HOME="$HOME/.jdks/zulu8.94.0.17-ca-jdk8.0.492-macosx_aarch64/Contents/Home"
+export JDK17_HOME="$HOME/.jdks/zulu17.66.19-ca-jdk17.0.19-macosx_aarch64/Contents/Home"
+export JAVA_HOME="$JDK17_HOME"
+export PATH="$JAVA_HOME/bin:$PATH"
+jdk8()  { path=(${path:#$JAVA_HOME/bin}); export JAVA_HOME="$JDK8_HOME";  path=("$JAVA_HOME/bin" $path); java -version; }
+jdk17() { path=(${path:#$JAVA_HOME/bin}); export JAVA_HOME="$JDK17_HOME"; path=("$JAVA_HOME/bin" $path); java -version; }
+
+
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<
