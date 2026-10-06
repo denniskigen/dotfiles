@@ -1,6 +1,6 @@
 ---
 name: o3-pr-create
-description: "Use when opening a pull request on an OpenMRS or O3 repo: branching, writing conventional commits, drafting the PR body from the repo template, and pushing. Pairs with o3-pr-review."
+description: "Use when opening a pull request on an OpenMRS or O3 repo: branching, writing conventional commits, drafting the PR body from the repo template, pushing, and following up on Greptile's review. Pairs with o3-pr-review."
 ---
 
 # O3 PR Create
@@ -56,6 +56,14 @@ If the user invoked this skill themselves (`/o3-pr-create`) or asked for the com
    - Do not open the PR until the current HEAD is self-reviewed, the push is done, and the body is approved.
    - Report the PR URL. Note any follow-ups: screenshot still needed, paired backend/distro PR to land first, or Transifex sync for new strings.
 
+8. Watch for Greptile's review.
+   - Greptile (`greptile-apps[bot]`) reviews new PRs on most O3 repos, usually 2 to 7 minutes after they open. It skips PRs from `openmrs-bot`.
+   - Right after opening the PR, run `~/.claude/skills/o3-pr-create/scripts/greptile.sh <owner/repo> <number> --wait` in the background. On a repo where Greptile has never commented it returns at once. Otherwise it waits up to 15 minutes, then prints Greptile's summary, inline findings, findings outside the diff, and TREX test run. Run it without `--wait` to re-read them later.
+   - Treat each finding as an unverified claim. Check it against the code with the Finding Validation Gate in `o3-pr-review` before acting on it, and share the verdicts in chat. The P1/P2 badges are Greptile's own ranking, not a verdict.
+   - Fix real findings on the branch (push gated as above). For each finding, draft a short thread reply in my voice: the commit that fixes it, or why it doesn't apply. Post replies only after approval. Greptile answers replies in its threads.
+   - Greptile doesn't re-review when you push. To have it re-check after fixes, ask before posting a PR comment that mentions `@greptileai`.
+   - TREX obstacles about a backend that isn't running or missing test data describe Greptile's test environment, not the PR. Skip them.
+
 ## Approval Gates
 
 Hard stops, in order:
@@ -109,6 +117,7 @@ The test for done: a reviewer gets the whole change from the first sentence, and
 5. Draft PR body filled from the repo template, headers kept, non-applicable sections blank, applicable boxes checked.
 6. Outstanding gates: confirm push, then confirm PR creation.
 7. After creation: the PR URL and any follow-ups (screenshot, paired PR, Transifex).
+8. Once Greptile's review lands: a verdict on each finding, fixes made, and drafted thread replies for approval.
 
 ## Attribution
 - Never include a Claude attribution footer in PR bodies, comments or review replies,
