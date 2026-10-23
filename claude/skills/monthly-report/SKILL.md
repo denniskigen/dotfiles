@@ -9,9 +9,9 @@ Generate paste-ready blocks for the user's monthly contractor report. The destin
 
 https://docs.google.com/spreadsheets/d/16RflO3NbTXM-6ttepxhGwmJF6SwMpl61l0LGNpf0Qi8/edit?gid=396280843#gid=396280843
 
-Each month in that sheet has six rows: one "Prioritization" row with a narrative in column E and commit-search URLs in column F, plus five leadership/mentorship rows that take short dash-bulleted evidence in column E. Columns A–C hold the same labels every month. The exact row numbers increment by month; find the heading `Learning & Achievement Goals: <Month Year>` in the sheet and the next six rows are that month's cells.
+Each month in that sheet has six rows: one "Prioritization" row with a narrative in column E and commit-search URLs in column F, plus five leadership/mentorship rows that take short dash-bulleted evidence in column E. Columns A–C hold the same labels every month. Months run newest first, starting at row 2 under the frozen header row. Find the heading `Learning & Achievement Goals: <Month Year>` in the sheet; the next six rows are that month's cells.
 
-If the target month has no heading yet, create its block by copying the previous month's. Each block is 12 rows: the heading, the six rows and five blank spacer rows. Check that the 12 rows below the previous block are empty, then copy the previous block (A:G, from its heading through its last spacer row) and paste it at the row 12 below the previous heading. Sheets adds rows when the paste runs past the last row. Change the pasted heading to the target month, clear the copied E and F cells, and confirm the rows above the new block didn't change.
+If the target month has no heading yet, create its block at the top by copying the latest month's. Each block is 12 rows: the heading, the six rows and five blank spacer rows. Select rows 2:13 and use Insert → Rows → "Insert 12 rows above". The latest month's block moves to rows 14–25; copy it (A14:G25) and paste it at A2. Change the pasted heading to the target month, clear the copied E and F cells, and confirm the rows below the new block didn't change.
 
 ## Steps
 
