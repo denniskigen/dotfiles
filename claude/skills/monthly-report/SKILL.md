@@ -88,7 +88,7 @@ If the target month has no heading yet, create its block by copying the previous
    <Label> https://github.com/<org>/<repo>/commits?author=denniskigen&since=<since>&until=<until>
    ```
 
-   Use the prior month's F cell as the baseline repo list. Add any repos with new authored PRs this month that weren't in the baseline. Keep repos from the baseline even if this month has no commits (consistent list across months).
+   List only repos where I have commits on the default branch in the month (squash-merged PRs count). Leave out repos with no work or only open PRs, since their link would open an empty commit list. Reuse labels from the prior month's F cell, and add a label for any repo that's new to the list.
 
    In the sheet, each URL is its own link. Pasting the block only links the last URL, so link the others in the cell afterwards.
 
@@ -99,7 +99,7 @@ If the target month has no heading yet, create its block by copying the previous
    Produce dash-bulleted blocks (matching the existing cell style), labeled by row role:
 
    - **Align colleagues around shared vision** — cite ecosystem-wide conventions the user authored or drove (e.g., reusable GHA workflows, cross-repo rollouts). Cut if none qualify.
-   - **Community task delegation** — lead with the single most-mentored contributor by review count and a qualitative line about guidance. Optional second bullet with the breadth stat (total PRs reviewed on others' work / distinct contributor count).
+   - **Community task delegation** — lead with the community contributor I reviewed most and a qualitative line about guidance. Skip maintainers whose PRs I review as a peer (for example ibacher), since calling them mentored reads oddly. If several contributors tie, present it as a mentorship example rather than a ranking. Optional second bullet with the breadth stat (total PRs reviewed on others' work / distinct contributor count).
    - **Leader at the Technical Leadership Table** — cite systemic infrastructure wins and release coordination (e.g., "coordinated N releases across core apps").
    - **O3 Onboarding Resources** — cite any `o3-docs` migration guides or major contributions authored in the month. Cut if none qualify.
    - **Ad-hoc technical support** — usually SKIP. Only include if there's a high-leverage, novel item not already covered by the delegation or leadership-table rows.
