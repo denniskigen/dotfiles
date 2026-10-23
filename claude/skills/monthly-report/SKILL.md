@@ -79,6 +79,7 @@ If the target month has no heading yet, create its block by copying the previous
    - **Non-technical reader.** Replace jargon: "non-atomic" → "two-step process that could leave things half-done"; "falsy check" → "code that treated zero as empty"; "peer dependency" → "dependency version"; "manual portal" / "framework primitive" → plain descriptions of what changed.
    - **End with an "Overall Impact" section** with three subsections: "For Healthcare Workers", "For Implementers", "For the OpenMRS Community".
    - **Em dashes are fine in the narrative.** (The no-em-dash rule only applies to code-review comments.)
+   - **Sheet formatting.** In the sheet, the numbered section headings and "Overall Impact" are bold, and the three impact labels ("For Healthcare Workers:", "For Implementers:", "For the OpenMRS Community:") are italic, without the leading "- ". The pasted text is plain, so apply these in the cell afterwards.
 
    ### Block 2 — F (commit-search URLs, plain text for Google Sheets)
 
@@ -88,6 +89,8 @@ If the target month has no heading yet, create its block by copying the previous
    ```
 
    Use the prior month's F cell as the baseline repo list. Add any repos with new authored PRs this month that weren't in the baseline. Keep repos from the baseline even if this month has no commits (consistent list across months).
+
+   In the sheet, each URL is its own link. Pasting the block only links the last URL, so link the others in the cell afterwards.
 
    ### Block 3 — Leadership-row evidence (E rows 2–5 for the month)
 
@@ -118,3 +121,4 @@ If the target month has no heading yet, create its block by copying the previous
 - If you find high-leverage work from the month that wasn't captured in brag-doc, flag it to the user so they can update brag-doc before the narrative is finalized.
 - Always convert relative dates in `$ARGUMENTS` to absolute (e.g., "last month" → the previous calendar month relative to today).
 - The PDP sheet's row numbers shift each month as new rows are added. Don't hard-code row numbers in the output; the user locates the right row by the month heading.
+- When writing to the sheet, paste plain text inside the cell editor (Enter, then Cmd+V) so line breaks stay in one cell. Pasting generated HTML onto a selected cell drops the line breaks and resets the cell style. To format, select each heading, label or URL in the cell editor with real Shift+Arrow keystrokes, then press Cmd+B, Cmd+I, or Cmd+K and type the URL into the link box. Placing the cursor by script is fine, but a selection set by script makes these shortcuts toggle unpredictably. Check the bold, italic and link runs, and each link's target, afterwards in the sheet's HTML export (`htmlview/sheet?headers=true&gid=396280843`).
