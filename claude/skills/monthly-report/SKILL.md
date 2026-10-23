@@ -9,7 +9,9 @@ Generate paste-ready blocks for the user's monthly contractor report. The destin
 
 https://docs.google.com/spreadsheets/d/16RflO3NbTXM-6ttepxhGwmJF6SwMpl61l0LGNpf0Qi8/edit?gid=396280843#gid=396280843
 
-Each month in that sheet has six rows: one "Prioritization" row with a narrative in column F and commit-search URLs in column G, plus five leadership/mentorship rows that take short dash-bulleted evidence in column F. The exact row numbers increment by month; find the heading `Learning & Achievement Goals: <Month Year>` in the sheet and the next six rows are that month's cells.
+Each month in that sheet has six rows: one "Prioritization" row with a narrative in column E and commit-search URLs in column F, plus five leadership/mentorship rows that take short dash-bulleted evidence in column E. Columns A–C hold the same labels every month. The exact row numbers increment by month; find the heading `Learning & Achievement Goals: <Month Year>` in the sheet and the next six rows are that month's cells.
+
+If the target month has no heading yet, create its block by copying the previous month's. Each block is 12 rows: the heading, the six rows and five blank spacer rows. Check that the 12 rows below the previous block are empty, then copy the previous block (A:G, from its heading through its last spacer row) and paste it at the row 12 below the previous heading. Sheets adds rows when the paste runs past the last row. Change the pasted heading to the target month, clear the copied E and F cells, and confirm the rows above the new block didn't change.
 
 ## Steps
 
@@ -36,12 +38,18 @@ Each month in that sheet has six rows: one "Prioritization" row with a narrative
       ```
       Filter results to `state == "merged"` and `createdAt < since+1` to avoid double-counting (a).
 
-   c. **PRs I reviewed in month:**
+   c. **PRs I reviewed in month** (by review time in Nairobi, UTC+3):
       ```
-      gh search prs --reviewed-by="@me" --created="<since+1>..<until>" --limit 1000 \
+      gh search prs --reviewed-by="@me" --updated=">=<since>" --limit 1000 \
         --json number,title,repository,author,url
       ```
-      Aggregate by `repository.name` and by `author.login`. Exclude `openmrs-bot` and self (`denniskigen`). Surface: total PRs reviewed on others' work, distinct contributor count, top contributor by review volume.
+      Count a PR by when I submitted a review, not when it was opened, so reviews of PRs opened in an earlier month count too. The search starts a day early to cover the three-hour offset. Keep a result only if one of my reviews on it falls in the target month:
+      ```
+      gh api "repos/<owner>/<repo>/pulls/<number>/reviews" --paginate \
+        --jq 'any(.[]; .user.login == "denniskigen" and (.submitted_at | fromdateiso8601 + 10800 | strftime("%Y-%m")) == "<YYYY-MM>")'
+      ```
+      `--paginate` prints one result per page, so keep the PR if any line is `true`.
+      Aggregate the kept PRs by `repository.name` and by `author.login`. Exclude `openmrs-bot` and self (`denniskigen`). Surface: total PRs reviewed on others' work, distinct contributor count, top contributor by review volume.
 
    d. **Jira tickets I reported with activity in month:**
       Use `mcp__jira__searchJiraIssues` with `maxResults: 200` and JQL:
@@ -60,7 +68,7 @@ Each month in that sheet has six rows: one "Prioritization" row with a narrative
 
 5. **Produce four output blocks in memory** (do NOT write them to files):
 
-   ### Block 1 — F (Prioritization narrative, plain text for Google Sheets)
+   ### Block 1 — E (Prioritization narrative, plain text for Google Sheets)
 
    Source the prose content from the target-month section of `~/.claude/brag-doc.md`. Organize into numbered themed sections matching the structure of the prior month's narrative in the sheet (check the equivalent row in the previous month for style consistency).
 
@@ -72,16 +80,16 @@ Each month in that sheet has six rows: one "Prioritization" row with a narrative
    - **End with an "Overall Impact" section** with three subsections: "For Healthcare Workers", "For Implementers", "For the OpenMRS Community".
    - **Em dashes are fine in the narrative.** (The no-em-dash rule only applies to code-review comments.)
 
-   ### Block 2 — G (commit-search URLs, plain text for Google Sheets)
+   ### Block 2 — F (commit-search URLs, plain text for Google Sheets)
 
    One line per repo, alphabetized by label, blank line between entries:
    ```
    <Label> https://github.com/<org>/<repo>/commits?author=denniskigen&since=<since>&until=<until>
    ```
 
-   Use the prior month's G cell as the baseline repo list. Add any repos with new authored PRs this month that weren't in the baseline. Keep repos from the baseline even if this month has no commits (consistent list across months).
+   Use the prior month's F cell as the baseline repo list. Add any repos with new authored PRs this month that weren't in the baseline. Keep repos from the baseline even if this month has no commits (consistent list across months).
 
-   ### Block 3 — Leadership-row evidence (F rows 2–5 for the month)
+   ### Block 3 — Leadership-row evidence (E rows 2–5 for the month)
 
    Rank signals by leverage (durability × breadth). **Drop low-leverage items.** Low-leverage means: scoped to few repos, self-resolved only, minor docs fixes, or already covered by a stronger signal in another row.
 
@@ -100,9 +108,9 @@ Each month in that sheet has six rows: one "Prioritization" row with a narrative
    - Bullet markers become `•` (literal bullet char)
    - No other formatting changes
 
-6. **Present all four blocks clearly labeled.** Then immediately copy Block 1 (F narrative) to the clipboard using `pbcopy` and report the character count.
+6. **Present all four blocks clearly labeled.** Then immediately copy Block 1 (E narrative) to the clipboard using `pbcopy` and report the character count.
 
-7. **Ask which block to copy next.** Options: G commit-links, leadership rows (specify which), Slack variant. On each request, pipe that block to `pbcopy` and confirm.
+7. **Ask which block to copy next.** Options: F commit-links, leadership rows (specify which), Slack variant. On each request, pipe that block to `pbcopy` and confirm.
 
 ## Notes
 
