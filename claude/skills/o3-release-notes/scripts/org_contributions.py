@@ -159,10 +159,12 @@ def main():
     by_org = collections.Counter(r["org"] for r in release)
     orgs = sorted(o for o in by_org if o not in NOT_ORGS)
     n = len(release)
+    # The first three lines use the page's labels
     lines = [
-        f"Number of PRs: {n}",
-        f"Number of organizations: {len(orgs)} ({', '.join(orgs)})",
-        f"% from OpenMRS Support: {100 * by_org['OpenMRS Support'] / n:.1f}%" if n else "% from OpenMRS Support: -",
+        f"# PRs included: {n}",
+        f"# of Orgs involved: {len(orgs)} ({', '.join(orgs)})",
+        f"% from OpenMRS Inc. Global Support: {100 * by_org['OpenMRS Support'] / n:.1f}%" if n
+        else "% from OpenMRS Inc. Global Support: -",
         "",
         "Method: Merged PRs across the frontend, backend, distro and content repositories between "
         f"{args.prev} and {args.new}, excluding bots, translation syncs and release commits. "

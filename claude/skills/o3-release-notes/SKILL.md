@@ -23,7 +23,7 @@ Jira issue, or a benchmark with its build named. If you can't find it, say so on
 ## Pages and sources
 
 - 3.8.0 notes, the current model of a finished page: page 913113089. Template: page 326402049, which
-  has followed the 3.8.0 structure since v17 (October 2026; see `references/page-structure.md`).
+  has followed the 3.8.0 structure since v19 (October 2026; see `references/page-structure.md`).
   Template instructions are red text, "Template note:" lines and "(<-- example only)" markers.
 - Next release's page starts as a planning page (feature owners, requirement links). Rewrite it into
   release notes near the cut; don't delete the planning content without the release manager.

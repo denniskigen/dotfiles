@@ -1,7 +1,7 @@
 # Page structure
 
 The finished 3.8.0 page (913113089) has these sections, in this order. The wiki template (326402049)
-has followed this structure since v17 (October 2026), with placeholders and red template notes.
+has followed this structure since v19 (October 2026), with placeholders and red template notes.
 
 ## Key Points
 Planned freeze and first release candidate dates, release date, release manager, and "Where to find it"
