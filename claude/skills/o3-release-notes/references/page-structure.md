@@ -14,15 +14,18 @@ bullets give the measured figure and name what was compared (for 3.8.0: 3.7.1 ag
 pre-release build from 27 September, same server; Platform search figures from openmrs-core#6342).
 
 ## Breaking Changes
-Opens with "Check the items that apply to your site below before upgrading:", then groups by audience:
+Opens with "Check the items that apply to your site below before upgrading:". Each bullet says what
+changed, who it affects, and what to do about it (the global property to set, the privilege to add),
+with a link to the migration guide when there is one.
+
+Most releases have one to four items, mostly for custom frontend modules (3.4 to 3.7), and a single list
+is enough. When there are many, group them by who they affect. 3.8.0 used five groups:
 - For every site
 - Sites with custom roles (new privilege checks, new privileges a button or page needs)
 - Sites running their own mix of backend modules (minimum Platform versions)
 - Custom frontend modules and distributions (Core vN): removed APIs, peer dependencies, build changes,
   and a link to the published migration guide
 - Sites using the demo content package
-
-Each bullet says what changed and what to do about it (the global property to set, the privilege to add).
 
 ## Known Issues
 "Fixes for these are planned for x.y.z." Then one bullet per issue: Jira key, what the user sees, and the

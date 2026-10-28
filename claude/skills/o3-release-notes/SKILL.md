@@ -23,7 +23,8 @@ Jira issue, or a benchmark with its build named. If you can't find it, say so on
 ## Pages and sources
 
 - 3.8.0 notes, the current model of a finished page: page 913113089. Template: page 326402049, which
-  has followed the 3.8.0 structure since v19 (October 2026; see `references/page-structure.md`).
+  has followed the 3.8.0 structure since v19 (October 2026; see `references/page-structure.md`), with
+  Breaking Changes as a single list since v20.
   Template instructions are red text, "Template note:" lines and "(<-- example only)" markers.
 - Next release's page starts as a planning page (feature owners, requirement links). Rewrite it into
   release notes near the cut; don't delete the planning content without the release manager.
@@ -73,7 +74,8 @@ Jira issue, or a benchmark with its build named. If you can't find it, say so on
 - Numbers name their source: the builds compared, the dataset, the PR or benchmark.
 - Don't call something new if it shipped earlier, and don't list a removal of something that never
   shipped. Check the previous release's notes and changelog.
-- Breaking Changes are grouped by who is affected (see `references/page-structure.md`), each with what to do.
+- Breaking Changes: say who each item affects and what to do, and group them by who they affect when
+  there are many (see `references/page-structure.md`).
 - Deferred: compare the planning list with what merged. Keep items that are still planned, with status.
 
 ### 3. Contributors and metrics (data)
