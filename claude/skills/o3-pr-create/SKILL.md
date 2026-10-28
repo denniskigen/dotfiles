@@ -43,7 +43,11 @@ If the user invoked this skill themselves (`/o3-pr-create`) or asked for the com
    - Check the requirement boxes that genuinely apply (conventional-commit title with ticket number, designs linked, tests included or validated by existing tests, and in esm-core, updated framework and storybook mocks for API changes). Leave a box unchecked if it does not apply, rather than checking it to look complete. Where the PR description check runs, the first box (title) must be checked or the check fails.
    - Title: `(type) O3-1234: Sentence case summary`, or `(type) Sentence case summary` when there's no ticket. Use `(BREAKING)` in place of the type for breaking changes. This becomes the squash PR title. `openmrs-module-*` repos usually drop the label (`O3-1234: Summary`, `RESTWS-1053: Summary`), so check existing human-authored PR titles for convention.
    - Add the Jira link to the Related Issue section when a ticket exists.
-   - For UI changes, flag that a screenshot or recording is needed in the Screenshots section. You cannot capture it; ask the user to add it.
+   - Decide what visual evidence the PR needs, and state the call and the reason with the draft, even when it's none:
+     - None: nothing a user sees changes (tests, types, tooling, backend-only changes, config plumbing with no rendered effect). Leave Screenshots blank.
+     - Before/after stills: the change shows in a static view (text, labels, layout, spacing, empty or error states, a column that renders differently). Name each view, captured at the same viewport with the same data on both sides.
+     - Screencast: the change only shows in motion or across steps (a multi-step flow, focus or keyboard behavior, loading or transition timing, a workspace opening or closing, a double-submit guard). Name the flow to record.
+     - Offer to capture them with `o3-screenshot` or `o3-screencast` against the local backend, and say what test data that needs. `gh` can't upload images, so hand over the files for the user to add to the PR in the browser.
    - No em dashes anywhere in the body.
    - Show the full draft (title plus body) to the user and get approval before creating the PR.
 
@@ -54,7 +58,7 @@ If the user invoked this skill themselves (`/o3-pr-create`) or asked for the com
 7. Open the PR (gated).
    - Create the PR with `gh pr create` using the approved title and body.
    - Do not open the PR until the current HEAD is self-reviewed, the push is done, and the body is approved.
-   - Report the PR URL. Note any follow-ups: screenshot still needed, paired backend/distro PR to land first, or Transifex sync for new strings.
+   - Report the PR URL. Note any follow-ups: screenshots or a screencast still to add, paired backend/distro PR to land first, or Transifex sync for new strings.
 
 8. Watch for Greptile's review.
    - Greptile (`greptile-apps[bot]`) reviews new PRs on most O3 repos, usually 2 to 7 minutes after they open. It skips PRs from `openmrs-bot`.
@@ -115,9 +119,10 @@ The test for done: a reviewer gets the whole change from the first sentence, and
 3. Self-review findings from `o3-pr-review`, shared in chat for approval before any fixes.
 4. Draft PR title (conventional, with ticket number when present).
 5. Draft PR body filled from the repo template, headers kept, non-applicable sections blank, applicable boxes checked.
-6. Outstanding gates: confirm push, then confirm PR creation.
-7. After creation: the PR URL and any follow-ups (screenshot, paired PR, Transifex).
-8. Once Greptile's review lands: a verdict on each finding, fixes made, and drafted thread replies for approval.
+6. Visual evidence call: none, stills (which views) or screencast (which flow), with the reason.
+7. Outstanding gates: confirm push, then confirm PR creation.
+8. After creation: the PR URL and any follow-ups (screenshots or screencast, paired PR, Transifex).
+9. Once Greptile's review lands: a verdict on each finding, fixes made, and drafted thread replies for approval.
 
 ## Attribution
 - Never include a Claude attribution footer in PR bodies, comments or review replies,
