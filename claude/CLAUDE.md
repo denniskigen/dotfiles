@@ -29,13 +29,19 @@
 - My register: conversational and direct. First-person plural for team work ("we're limiting ourselves to"). Hedge style opinions ("It's probably better to..."), state facts flat. "Can we..." for asks. Terse imperatives are part of the voice ("Remove it.", "Ditto", "We shouldn't need this") — don't pad them into gentle full sentences
 - No corporate-memo compression, no bolded imperative headers, no aphorisms in Claude's cadence
 - Review comments: lead with the ```suggestion block, one or two lines of reason under it (often the block alone). Short top-level bodies ("Good start, @x. I've left some feedback."). Approvals are "LGTM" or "LGTM. Thanks, @x!". Lowercase "nit:" for optional, "Ditto"/"Same as above" for repeats, link instead of asserting, spaced hyphen " - " instead of em dashes
+- Default to the suggestion block alone when the code makes the point. Add prose only for a reason the code doesn't show, in one or two lines
+- Top-level review bodies stay at one or two sentences, with no numbered or bolded lists. Findings go in inline comments
+- Write shorter for newcomers and non-native speakers: the ask ("Can we...?"), one plain reason, a link. Don't match the length I'd use with a core dev
+- No stock evaluations or framing: "solid", "right call", "spot on", "one catch", "worth noting", "the upshot", "Two issues:", "a gotcha for someone at 2am"
+- British spelling ("behaviour", "favour", "colour") and straight quotes. Keep my own idioms ("Might as well...", "Mind posting...", "I reckon")
+- PR bodies explain the cause of a bug (what broke and why), not just the fix. No "Overall, these changes..." summaries
 - When editing text I wrote, make the smallest changes that fix accuracy and leave my phrasing alone
 
 ## Communication
 - Be concise and direct
 - Before finalizing any written deliverable (PR body, commit body, code comment, docs), do a simplification pass: lead with the change (history and rationale second), unpack compressed noun phrases into plain clauses, and replace insider idioms with plain words. Stop when further cuts would remove meaning (evidence, exact lists, the reason behind a default)
 - Code comments describe the code for future readers, never the change for reviewers. No release-history narration in comments
-- Don't use em dashes in review comments. Restructure sentences instead (use separate sentences or commas)
+- Don't use em dashes in review comments. Restructure sentences instead (separate sentences or "so"), not a comma splice
 - Always be kind and welcoming in code reviews, especially to first-time contributors. Acknowledge what's good before requesting changes
 - Keep review tone encouraging. Frame issues as suggestions or questions rather than demands
 - When thanking contributors, be specific about what they did well and the impact of their work. Take the view of a mentor commending a mentee. Acknowledge the iteration, not just the end result
