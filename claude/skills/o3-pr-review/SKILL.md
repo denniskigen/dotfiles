@@ -20,6 +20,7 @@ Use this for OpenMRS/O3 PR reviews, rereviews, pre-PR self-reviews of a local br
    - For rereviews or "latest commits" requests, identify the previously reviewed SHA or discussion state, then review only the new diff unless older context is needed.
    - When the request links one file or hunk, treat it as the focus, not the scope. Review the PR, and follow the paths that file feeds into other files and the backend.
    - Treat a PR's "not included", "follow-up", or deferred items as claims to test, not areas to skip. Ask whether the shipped part works on its own without the deferred work, and whether the docs and examples say what it can't do yet.
+   - For code PRs (every mode except docs/translations and CI-only), start the Codex Second Opinion below in the background as soon as the PR head is checked out, so it runs while you review.
 
 2. Inspect the actual code.
    - Review changed code plus nearby callers, tests, fixtures, config, and translations.
@@ -51,6 +52,7 @@ Use this for OpenMRS/O3 PR reviews, rereviews, pre-PR self-reviews of a local br
    - Separate blocking findings, non-blocking release coordination notes, test gaps, and private observations.
    - Before drafting a comment, validate that the finding is introduced by the PR, has real user/workflow/data/CI impact, is backed by code/backend/test/log evidence, and has a smallest safe fix or clear follow-up path.
    - Do not draft a new review comment for an issue that is already covered, already addressed, or settled by a maintainer unless new evidence materially changes the risk or the human reviewer asks for a stronger follow-up.
+   - When the Codex Second Opinion finishes, put each of its findings through these same checks. A Codex finding gets no shortcut for having come from a reviewer.
 
 5. Adversarially verify high-stakes findings.
    - For every finding that would be a blocking comment, or that touches backend or REST contract, data integrity, workflow correctness, or security, run the Adversarial Verification gate below before drafting it.
@@ -144,6 +146,18 @@ Outcome:
 
 - Survives refutation: draft it, and fold what the refutation tried and failed to show into the evidence.
 - Refuted: drop it or reframe as a question. Record why it was dropped so it appears in the already-considered part of the output, not as a silent omission.
+
+## Codex Second Opinion
+
+Run OpenAI's Codex CLI as an independent reviewer alongside your own pass. A different model misses different things: on stock-management-app#734 it caught a stock take regression that two Claude review passes had missed. Its output is a list of claims, not evidence.
+
+- Run it on a checkout of the PR head, never in the user's working copy. Fetch the head (`git fetch origin pull/<n>/head`), add a scratch worktree at that SHA in the scratchpad, and run `codex review --base origin/<base-branch>` there with output to a file, in the background. It takes several minutes per PR. When reviewing several PRs, run them in parallel. For your own uncommitted changes (from `o3-pr-create` or a fix sweep), run `codex review --uncommitted` in the worktree that holds them. Codex runs the repo's tests if it can, so link the main checkout's `node_modules` into the worktree when that matters.
+- Start it before you form findings, and don't put your findings in its prompt. Its value is independence, and a prompt that lists your conclusions turns it into a confirmation pass.
+- Don't let it block the review when it fails:
+  - "requires a newer version of Codex": the CLI is older than the model in `~/.codex/config.toml`. Upgrade it (`npm install -g @openai/codex@latest`; `npm view @openai/codex version` shows the latest) and rerun.
+  - Usage limit: finish the review without it, say so in the output with the reset time Codex reports, and offer to rerun after the reset.
+- Verify every Codex finding the way you verify your own: the Finding Validation Gate, then Adversarial Verification when it qualifies. Open the files and lines it cites, because a citation can point at evidence that doesn't support the claim. When it says it reproduced something, reproduce it yourself.
+- In the output, merge the findings that survive into your findings list. List the dropped ones under already-considered, with the reason for each. Don't name Codex in drafted GitHub comments; each comment stands on its own evidence.
 
 ## Contract Preservation Checks
 
@@ -304,7 +318,7 @@ For an initial review:
 4. Release coordination notes, if any.
 5. Suggested inline comments for new issues only, not posted yet.
 6. Tests or validation performed, plus any gaps.
-7. Scope the verdict by lens: state which review dimensions were actually run (correctness, contract preservation, API surface, varied-value walk-through, release coordination, discussion state) and which were not. Name the workflows a backend check actually covered; "backend contract checked" is an overclaim if only one endpoint was exercised. "No findings" is a claim about the dimensions examined, never about the PR in general; an unscoped clean verdict silently overclaims completeness.
+7. Scope the verdict by lens: state which review dimensions were actually run (correctness, contract preservation, API surface, varied-value walk-through, release coordination, discussion state, Codex second opinion) and which were not. If Codex didn't run or didn't finish, say why. Name the workflows a backend check actually covered; "backend contract checked" is an overclaim if only one endpoint was exercised. "No findings" is a claim about the dimensions examined, never about the PR in general; an unscoped clean verdict silently overclaims completeness.
 
 For "validate those findings":
 
