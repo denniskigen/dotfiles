@@ -32,6 +32,19 @@ link "$repo/agents" "$HOME/.agents"
 # $HOME covers every project under it.
 link "$repo/claude/mcp.json" "$HOME/.mcp.json"
 
+# Scripts the scheduled tasks call. What they write (state, digests, call
+# notes) stays in ~/.claude next to them, outside the repo.
+mkdir -p ~/.claude/community-watch ~/.claude/squad-agenda
+link "$repo/claude/community-watch/talk-scan.py" "$HOME/.claude/community-watch/talk-scan.py"
+for f in squad-dashboard.py wispr-transcript.py; do
+  link "$repo/claude/squad-agenda/$f" "$HOME/.claude/squad-agenda/$f"
+done
+
+# The Claude app won't read a scheduled task's prompt through a symlink, so
+# the prompts are copied instead. Tasks that aren't registered on this machine
+# yet are skipped; README covers registering them.
+"$repo/claude/scheduled-tasks/sync.sh" in
+
 # port-openmrs-form's content is shared with Codex. Point Codex at the same
 # copy so the two never drift.
 codex_skill="$HOME/.codex/skills/port-openmrs-form"

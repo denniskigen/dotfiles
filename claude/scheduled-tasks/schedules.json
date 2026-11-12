@@ -1,0 +1,22 @@
+{
+  "biweekly-standup": {
+    "title": "Standup draft (every other Tuesday)",
+    "cron": "0 16 * * 2"
+  },
+  "morning-pr-review-drafts": {
+    "title": "Morning PR review drafts (weekdays)",
+    "cron": "0 8 * * 1-5"
+  },
+  "community-watch": {
+    "title": "OpenMRS Talk + Jira watch (weekdays)",
+    "cron": "30 8 * * 1-5"
+  },
+  "squad-call-prep": {
+    "title": "O3 squad call prep (Thursdays)",
+    "cron": "0 12 * * 4"
+  },
+  "squad-call-notes": {
+    "title": "O3 squad call notes (Thursdays, after the call)",
+    "cron": "0 21 * * 4"
+  }
+}
