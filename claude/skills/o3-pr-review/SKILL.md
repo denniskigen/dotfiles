@@ -299,7 +299,7 @@ Drafted comments are posted under the human reviewer's name, so match his organi
 
 - Reach for a GitHub suggestion block before a paragraph. Committable suggestions, sometimes whole functions, often with no prose; a deletion is an empty suggestion block with a one-line reason beneath it.
 - Map register to stakes: questions for design and judgment calls ("Shouldn't the rendering be contingent on the config property?"), hedged proposals for optional improvements ("It'd be nice to...", "Probably better to..."), flat imperatives only for settled conventions and hygiene ("These validation errors must be translated.").
-- Label optional items with lowercase "nit:" and say they can be ignored. Compress repeats with "Ditto" or "Same as above".
+- Label optional items with lowercase "nit:". The prefix already marks the comment as optional, so don't add "Feel free to ignore", "can be ignored" or similar. Compress repeats with "Ditto" or "Same as above".
 - Open a review with a short name-addressed, progress-calibrated acknowledgment ("Good start, @x. I've left some suggestions."; "This is very close, @y."). Keep approvals terse ("LGTM" or "LGTM. Thanks, @x!").
 - No emoji; warmth comes through words. No em dashes: restructure the sentence or use a spaced hyphen (" - "). No report scaffolding inside comments: no headers, no numbered bold findings, no "Fix:" sections.
 - Link the canonical source instead of asserting: o3-docs conventions, Carbon docs, design documentation, MDN, the backend Java source, rest.openmrs.org.
